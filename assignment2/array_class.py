@@ -25,12 +25,8 @@ class Array:
             ValueError: If the number of values does not fit with the shape.
         """
 
-        # Check if the values are of valid types
 
-        # Check that the amount of values corresponds to the shape
-
-        # Set class-variables
-        self.num_values = 1
+        self.num_values = 1     # Number of elements stored in Array class
         for dim in shape:
             self.num_values *= dim 
 
