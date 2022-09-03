@@ -40,12 +40,11 @@ class Array:
                 raise TypeError(message)
 
         if len(values) > 1:                 # We only need to assertt homogeneity if there is more than one elements in the array.
-            datatype = type(values[0])
+            self.datatype = type(values[0]) # Defining the datatype of the Array values from the first element of the provided values.
             for value in values[1:]:
-                if not type(value) == datatype:
-                    message = f"The array elements must be of the same datatype. Currently both {datatype} and {type(value)} are contained in array."
+                if not type(value) == self.datatype:
+                    message = f"The array elements must be of the same datatype. Currently both {self.datatype} and {type(value)} are contained in array."
                     raise ValueError(message)
-
 
         self.shape = shape              
         self.values = list(values)      # Changing input tuple of values to list.
@@ -67,7 +66,13 @@ class Array:
             str: A string representation of the array.
 
         """
-        pass
+        
+        string = ""
+        for value in self.values:
+            string += f"{value}, "
+        string = "[" + string[:-2] + "]" # Getting rid of trailing comma and adding paranthesis
+        
+        return string
 
     def __add__(self, other):
         """Element-wise adds Array with another Array or number.
@@ -83,10 +88,17 @@ class Array:
 
         """
 
-        # check that the method supports the given arguments (check for data type and shape of array)
-        # if the array is a boolean you should return NotImplemented
-
-        pass
+        if not isinstance(other, Array):
+            return NotImplemented
+        elif self.shape != other.shape:
+            return NotImplemented
+        elif self.datatype == bool or other.datatype == bool:
+            return NotImplemented
+        else:
+            new_values = []
+            for i in range(self.shape[0]):
+                new_values.append(self.values[i] + other.values[i])
+            return new_values
 
     def __radd__(self, other):
         """Element-wise adds Array with another Array or number.
@@ -101,7 +113,22 @@ class Array:
             Array: the sum as a new array.
 
         """
-        pass
+        if not isinstance(other, Array):    
+            
+            new_values = []
+            if isinstance(other, (int, float)):
+                for value in self.values:
+                    new_values.append(other + value)
+            
+            if isinstance(other, (bool)):
+                return NotImplemented
+        else:
+            if self.shape != other.shape:
+                # TODO: implement addition for two Array classes with different shapes?
+                return NotImplemented
+                
+        return new_values
+
 
     def __sub__(self, other):
         """Element-wise subtracts an Array or number from this Array.
@@ -116,7 +143,18 @@ class Array:
             Array: the difference as a new array.
 
         """
-        pass
+        if not isinstance(other, Array):
+            return NotImplemented
+        elif self.shape != other.shape:
+            return NotImplemented
+        elif self.datatype == bool or other.datatype == bool:
+            return NotImplemented
+        else:
+            new_values = []
+            for i in range(shape[0]):
+                new_values.append(self.values[i] - other.values[i])
+            return new_values
+
 
     def __rsub__(self, other):
         """Element-wise subtracts this Array from a number or Array.
@@ -131,7 +169,22 @@ class Array:
             Array: the difference as a new array.
 
         """
-        pass
+        if not isinstance(other, Array):    
+            
+            new_values = []
+
+            if isinstance(other, (int, float)):
+                for value in self.values:
+                    new_values.append(other - value)
+
+            if isinstance(other, (bool)):
+                return NotImplemented
+        else:
+            if self.shape != other.shape:
+                # TODO: implement subtraction for two Array classes with different shapes, i.e. broadcasting?
+                return NotImplemented
+
+        return new_values
 
     def __mul__(self, other):
         """Element-wise multiplies this Array with a number or array.
@@ -146,7 +199,18 @@ class Array:
             Array: a new array with every element multiplied with `other`.
 
         """
-        pass
+        if not isinstance(other, Array):
+            return NotImplemented
+        elif self.shape != other.shape:
+            return NotImplemented
+        elif self.datatype == bool or other.datatype == bool:
+            return NotImplemented
+        else:
+            new_values = []
+            for i in range(shape[0]):
+                new_values.append(self.values[i] * other.values[i])
+            return new_values
+
 
     def __rmul__(self, other):
         """Element-wise multiplies this Array with a number or array.
@@ -162,7 +226,24 @@ class Array:
 
         """
         # Hint: this solution/logic applies for all r-methods
-        return self.__mul__(other)
+        # return self.__mul__(other)
+
+        if not isinstance(other, Array):    
+    
+            new_values = []
+
+            if isinstance(other, (int, float)):
+                for value in self.values:
+                    new_values.append(other * value)
+
+            if isinstance(other, (bool)):
+                return NotImplemented
+        else:
+            if self.shape != other.shape:
+                # TODO: implement subtraction for two Array classes with different shapes, i.e. broadcasting?
+                return NotImplemented
+
+        return new_values
 
     def __eq__(self, other):
         """Compares an Array with another Array.
@@ -177,7 +258,22 @@ class Array:
             bool: True if the two arrays are equal (identical). False otherwise.
 
         """
-        pass
+        if not isinstance(other, (Array, float, int, bool)):
+            return False
+        else:
+            print(self, other)
+            if isinstance(other, Array):
+                if self.datatype != other.datatype:
+                    return False 
+                elif self.shape != other.shape:
+                    return False
+            
+            bools = self.is_equal(other)
+            if False in bools:
+                return False
+            else: 
+                return True
+
 
     def is_equal(self, other):
         """Compares an Array element-wise with another Array or number.
@@ -197,8 +293,21 @@ class Array:
             ValueError: if the shape of self and other are not equal.
 
         """
+        if not isinstance(other, (Array, float, int, bool)):
+            raise TypeError(f"Cannot compare Array with object of type {type(other)}.")
+        else:
+            new_values = []
+            if isinstance(other, Array):
+                if self.shape != other.shape:
+                    raise ValueError("To compare two objects of type Array their shapes must match.")
+                
+                for i in range(self.shape[0]):
+                    new_values.append(self.values[i] == other.values[i])
+            if isinstance(other, (float, int, bool)):
+                for i in range(self.shape[0]):
+                    new_values.append(self.values[i] == other)
 
-        pass
+            return new_values
 
     def min_element(self):
         """Returns the smallest value of the array.
@@ -210,7 +319,17 @@ class Array:
 
         """
 
-        pass
+        if self.datatype == bool:
+            raise TypeError("Can only find minimum of array if it is of datatype integer of float.")
+
+        min_elem = self.values[0] # Initializing minimum value with first array element
+
+        for value in self.values[1:]:
+            if value < min_elem:
+                min_elem = value
+
+        return min_elem
+
 
     def mean_element(self):
         """Returns the mean value of an array
@@ -221,10 +340,40 @@ class Array:
             float: the mean value
         """
 
-        pass
+        if self.datatype == bool:
+                raise TypeError("Can only find mean of array if it is of datatype integer of float.")
 
+        mean = 0
+        for value in self.values:
+            mean += value           # Cumulative sum of array elements
+
+        N = 1
+        for dim in self.shape:
+            N *= dim                # Total number of elements in array along all dimensions
+        
+        return mean / N 
+
+    
 
 if __name__ == "__main__":
     shape = (4,)
+    shape2 = (4,)
     my_array = Array(shape, 2, 3, 1, 0)
-    print(my_array[0])
+    another_array = Array(shape2, 2, 3, 1, 0)
+    # print(my_array[0])
+    print(my_array)
+    
+    # print(my_array + another_array)
+    #print(another_array + 1)
+    print(1 + another_array)
+    print(1 - another_array)
+    print(3 * another_array)
+    print(my_array.is_equal(another_array))
+    print(another_array == 0)
+  
+    # print(my_array - another_array)
+    # print(my_array * another_array)
+    # print(my_array.min_element())
+    # print(my_array.mean_element())
+
+
