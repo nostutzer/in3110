@@ -151,7 +151,7 @@ class Array:
             return NotImplemented
         else:
             new_values = []
-            for i in range(shape[0]):
+            for i in range(self.shape[0]):
                 new_values.append(self.values[i] - other.values[i])
             return new_values
 
@@ -207,7 +207,7 @@ class Array:
             return NotImplemented
         else:
             new_values = []
-            for i in range(shape[0]):
+            for i in range(self.shape[0]):
                 new_values.append(self.values[i] * other.values[i])
             return new_values
 
@@ -261,7 +261,6 @@ class Array:
         if not isinstance(other, (Array, float, int, bool)):
             return False
         else:
-            print(self, other)
             if isinstance(other, Array):
                 if self.datatype != other.datatype:
                     return False 
