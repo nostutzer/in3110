@@ -47,8 +47,18 @@ class Array:
                     raise ValueError(message)
 
 
-        self.shape = shape
-        self.values = list(values)
+        self.shape = shape              
+        self.values = list(values)      # Changing input tuple of values to list.
+
+
+    def __getitem__(self, idx):
+        """Returns Array element at given index
+
+        Args:
+            idx (int): Index at which Array element is to be returned.
+        """
+        return self.values[idx]
+
 
     def __str__(self):
         """Returns a nicely printable string representation of the array.
@@ -217,3 +227,4 @@ class Array:
 if __name__ == "__main__":
     shape = (4,)
     my_array = Array(shape, 2, 3, 1, 0)
+    print(my_array[0])
