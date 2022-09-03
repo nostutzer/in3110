@@ -31,7 +31,24 @@ class Array:
 
         # Set class-variables
 
-        pass
+        if not isinstance(shape, tuple):
+            raise TypeError("Input shape must be of type tuple.")
+
+        for value in values:
+            if not isinstance(value, (float, int, bool)):
+                message = f"Array value {value} if of type {type(value)}. Only integers, floats or boolean values are permitted."
+                raise TypeError(message)
+
+        if len(values) > 1:                 # We only need to assertt homogeneity if there is more than one elements in the array.
+            datatype = type(values[0])
+            for value in values[1:]:
+                if not type(value) == datatype:
+                    message = f"The array elements must be of the same datatype. Currently both {datatype} and {type(value)} are contained in array."
+                    raise ValueError(message)
+
+
+        self.shape = shape
+        self.values = list(values)
 
     def __str__(self):
         """Returns a nicely printable string representation of the array.
@@ -195,3 +212,8 @@ class Array:
         """
 
         pass
+
+
+if __name__ == "__main__":
+    shape = (4,)
+    my_array = Array(shape, 2, 3, 1, 0)
