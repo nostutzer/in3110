@@ -2,6 +2,9 @@
 Array class for assignment 2
 """
 
+import itertools as iter
+import copy
+
 class Array:
 
     def __init__(self, shape, *values):
@@ -52,11 +55,28 @@ class Array:
         self.shape = shape
         self.values_flat = list(values)
 
-        self.values = []
+        
+        self.values = 0     # Inializing values with zero before filling with correct values
 
         if len(shape) > 1:
-            for i in range(shape[0]):
-                self.values.append(list(values[i * shape[1] : (i + 1) * shape[1]]))
+            for i in shape[::-1]:                                               # Generating nested list of zeros with correct shape.
+                self.values = [copy.deepcopy(self.values) for _ in range(i)]    # Using copy.deepcopy() from Python's standard library
+                                                                                # To avoid linking list elements though referencing.
+            
+            for index in iter.product(*map(range, shape)):
+                idx = index[0] # Initializing flattened index as "x" index
+        
+                lst = self.values[idx]  # Filling values nested list with values from flattened values list implicetly through referencing
+                counter = 0 # Empty counter
+
+                for i, sh in zip(index[1:], shape[1:]):
+                    idx = sh * idx + i    # Iterative solving for flattened index
+                    if counter < len(shape[2:]):
+                        lst = lst[i]
+                    else:
+                        lst[i] = self.values_flat[idx]  # Setting value from flattened values through referencing
+        
+                    counter += 1    # Updating counter
         else:
             self.values = list(values)
         
@@ -359,4 +379,3 @@ class Array:
         return mean / N 
 
     
-
