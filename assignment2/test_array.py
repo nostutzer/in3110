@@ -12,6 +12,7 @@ def test_str_1d():
     expected = "[3, 2, 1, 0]"
     assert str(my_array) == expected
 
+
 def test_add_1d():
     # Testing two integer arrays (__add__)
     my_array = Array((4,), 3, 2, 1, 0)
@@ -32,13 +33,14 @@ def test_add_1d():
     expected = [0, -1.0, -2.0, -3.0]
     result = some_scalar + my_array
     assert result.values == expected
-        
+
     # Testing one integer array and a scalar (__radd__)
     my_array = Array((4,), 3, 2, 1, 0)
     some_scalar = -3.0
     expected = [0, -1.0, -2.0, -3.0]
     result = some_scalar + my_array
     assert result.values == expected
+
 
 def test_sub_1d():
     # Testing two integer arrays (__sub__)
@@ -54,21 +56,22 @@ def test_sub_1d():
     expected = [-2.0, 1.0, -1.0, 3.0]
     result = my_array - another_array
     assert result.values == expected
-        
+
     # Testing one float array and a scalar (__rsub__)
     my_array = Array((4,), 3.0, 2.0, 1.0, 0.0)
     some_scalar = -3.0
     expected = [-6.0, -5.0, -4.0, -3.0]
     result = some_scalar - my_array
     assert result.values == expected
-        
+
     # Testing one integer array and a scalar (__rsub__)
     my_array = Array((4,), 3, 2, 1, 0)
-    some_scalar = -3.0  
+    some_scalar = -3.0
     expected = [-6.0, -5.0, -4.0, -3.0]
     result = some_scalar - my_array
     assert result.values == expected
-        
+
+
 def test_mul_1d():
     # Testing two integer arrays (__mul__)
     my_array = Array((4,), 3, 2, 1, 0)
@@ -89,7 +92,7 @@ def test_mul_1d():
     expected = [-9.0, -6.0, -3.0, 0.0]
     result = some_scalar * my_array
     assert result.values == expected
-        
+
     # Testing one integer array and a scalar (__rmul__)
     my_array = Array((4,), 3, 2, 1, 0)
     some_scalar = -3.0
@@ -97,70 +100,71 @@ def test_mul_1d():
     result = some_scalar * my_array
     assert result.values == expected
 
+
 def test_eq_1d():
     # Testing two integer arrays (__eq__)
     my_array = Array((4,), 3, 2, 1, 0)
     another_array = Array((4,), 3, 2, 1, 0)
     expected = True
-    result = (my_array == another_array)
+    result = my_array == another_array
     assert result == expected
 
     # Testing two integer arrays (__eq__)
     my_array = Array((4,), 3, 2, 1, 0)
     another_array = Array((4,), 3, -5, 1, 0)
     expected = False
-    result = (my_array == another_array)
+    result = my_array == another_array
     assert result == expected
 
     # Testing two float arrays (__eq__)
     my_array = Array((4,), 3.0, 2.0, 1.0, 0.0)
     another_array = Array((4,), 3.0, -5.0, 1.0, 0.0)
     expected = False
-    result = (my_array == another_array)
+    result = my_array == another_array
     assert result == expected
 
     # Testing two float arrays (__eq__)
     my_array = Array((4,), 3.0, 2.0, 1.0, 0.0)
     another_array = Array((4,), 3.0, 2.0, 1.0, 0.0)
     expected = True
-    result = (my_array == another_array)
+    result = my_array == another_array
     assert result == expected
 
     # Testing two bool arrays (__eq__)
     my_array = Array((4,), False, False, True, False)
     another_array = Array((4,), False, False, True, False)
     expected = True
-    result = (my_array == another_array)
+    result = my_array == another_array
     assert result == expected
-    
+
     # Testing two bool arrays (__eq__)
     my_array = Array((4,), False, True, True, False)
     another_array = Array((4,), False, False, True, False)
     expected = False
-    result = (my_array == another_array)
+    result = my_array == another_array
     assert result == expected
-    
 
     # Testing one bool arrays and a bool scalar (__eq__)
     my_array = Array((4,), False, True, True, False)
     scalar = True
     expected = False
-    result = (my_array == scalar)
+    result = my_array == scalar
     assert result == expected
 
     # Testing one float arrays and one float scalar (__eq__)
     my_array = Array((4,), 3.0, 3.0, 3.0, 3.0)
     scalar = 3.0
     expected = True
-    result = (my_array == scalar)
+    result = my_array == scalar
     assert result == expected
 
     # Testing one int arrays and strange datatype scalar (__eq__)
     my_array = Array((4,), 3, 3, 3, 3)
     scalar = "3.0"
     expected = False
-    result = (my_array == scalar)
+    result = my_array == scalar
     assert result == expected
+
 
 def test_same_1d():
     # Testing two integer arrays (is_equal)
@@ -191,32 +195,33 @@ def test_same_1d():
     result = (my_array.is_equal(scalar)).values
     assert result == expected
 
+
 def test_smallest_1d():
     # Testing one float array(min_element)
     my_array = Array((4,), 3.0, -2.0, 1.0, 0.0)
     expected = -2.0
-    result = (my_array.min_element())
+    result = my_array.min_element()
     assert result == expected
 
     # Testing one float array(min_element)
     my_array = Array((4,), 3, 2, -1, 0)
     expected = -1
-    result = (my_array.min_element())
+    result = my_array.min_element()
     assert result == expected
+
 
 def test_mean_1d():
     # Testing one float array(mean_element)
     my_array = Array((4,), 3.0, -2.0, 1.0, 0.0)
     expected = (3.0 - 2.0 + 1.0 + 0.0) / 4
-    result = (my_array.mean_element())
+    result = my_array.mean_element()
     assert result == expected
 
     # Testing one float array(mean_element)
     my_array = Array((4,), 3, 2, -1, 0)
     expected = (3 + 2 - 1 + 0) / 4
-    result = (my_array.mean_element())
+    result = my_array.mean_element()
     assert result == expected
-
 
 
 # 2D tests (Task 6)
@@ -224,27 +229,81 @@ def test_mean_1d():
 
 def test_add_2d():
     # Testing two (2, 2) integer arrays (__add__)
-    my_array = Array((2, 2,), 3, 2, 1, 0)
-    another_array = Array((2, 2,), 5, 1, 2, -3)
+    my_array = Array(
+        (
+            2,
+            2,
+        ),
+        3,
+        2,
+        1,
+        0,
+    )
+    another_array = Array(
+        (
+            2,
+            2,
+        ),
+        5,
+        1,
+        2,
+        -3,
+    )
     expected = [[8, 3], [3, -3]]
     result = my_array + another_array
     assert result.values == expected
 
     # Testing two (2, 2) float arrays (__add__)
-    my_array = Array((2, 2,), 3.0, 2.0, 1.0, 0.0)
-    another_array = Array((2, 2,), 5.0, 1.0, 2.0, -3.0)
+    my_array = Array(
+        (
+            2,
+            2,
+        ),
+        3.0,
+        2.0,
+        1.0,
+        0.0,
+    )
+    another_array = Array(
+        (
+            2,
+            2,
+        ),
+        5.0,
+        1.0,
+        2.0,
+        -3.0,
+    )
     expected = [[8.0, 3.0], [3.0, -3.0]]
     result = my_array + another_array
     assert result.values == expected
     # Testing one (2, 2) float array and a scalar (__radd__)
-    my_array = Array((2, 2,), 3.0, 2.0, 1.0, 0.0)
+    my_array = Array(
+        (
+            2,
+            2,
+        ),
+        3.0,
+        2.0,
+        1.0,
+        0.0,
+    )
     some_scalar = -3.0
     expected = [[0, -1.0], [-2.0, -3.0]]
     result = some_scalar + my_array
     assert result.values == expected
-        
+
     # Testing one (2, 2) integer array and a scalar (__radd__)
-    my_array = Array((2, 2,), 3, 2, 1, 0)
+    my_array = Array(
+        (
+            2,
+            2,
+        ),
+        3,
+        2,
+        1,
+        0,
+    )
     some_scalar = -3.0
     expected = [[0, -1.0], [-2.0, -3.0]]
     result = some_scalar + my_array
@@ -253,27 +312,81 @@ def test_add_2d():
 
 def test_mult_2d():
     # Testing two (2, 2) integer arrays (__mul__)
-    my_array = Array((2, 2,), 3, 2, 1, 0)
-    another_array = Array((2, 2,), 5, 1, 2, -3)
+    my_array = Array(
+        (
+            2,
+            2,
+        ),
+        3,
+        2,
+        1,
+        0,
+    )
+    another_array = Array(
+        (
+            2,
+            2,
+        ),
+        5,
+        1,
+        2,
+        -3,
+    )
     expected = [[15, 2], [2, 0]]
     result = my_array * another_array
     assert result.values == expected
 
     # Testing two (2, 2) float arrays (__mul__)
-    my_array = Array((2, 2,), 3.0, 2.0, 1.0, 0.0)
-    another_array = Array((2, 2,), 5.0, 1.0, 2.0, -3.0)
+    my_array = Array(
+        (
+            2,
+            2,
+        ),
+        3.0,
+        2.0,
+        1.0,
+        0.0,
+    )
+    another_array = Array(
+        (
+            2,
+            2,
+        ),
+        5.0,
+        1.0,
+        2.0,
+        -3.0,
+    )
     expected = [[15.0, 2.0], [2.0, 0.0]]
     result = my_array * another_array
     assert result.values == expected
     # Testing one (2, 2) float array and a scalar (__rmul__)
-    my_array = Array((2, 2,), 3.0, 2.0, 1.0, 0.0)
+    my_array = Array(
+        (
+            2,
+            2,
+        ),
+        3.0,
+        2.0,
+        1.0,
+        0.0,
+    )
     some_scalar = -3.0
     expected = [[-9.0, -6.0], [-3.0, 0.0]]
     result = some_scalar * my_array
     assert result.values == expected
-        
+
     # Testing one (2, 2) integer array and a scalar (__rmul__)
-    my_array = Array((2, 2,), 3, 2, 1, 0)
+    my_array = Array(
+        (
+            2,
+            2,
+        ),
+        3,
+        2,
+        1,
+        0,
+    )
     some_scalar = -3.0
     expected = [[-9.0, -6.0], [-3.0, 0.0]]
     result = some_scalar * my_array
@@ -282,28 +395,91 @@ def test_mult_2d():
 
 def test_same_2d():
     # Testing two (2, 2) integer arrays (is_equal)
-    my_array = Array((2, 2,), 3, 2, 1, 0)
-    another_array = Array((2, 2,), 3, 2, -1, 0)
+    my_array = Array(
+        (
+            2,
+            2,
+        ),
+        3,
+        2,
+        1,
+        0,
+    )
+    another_array = Array(
+        (
+            2,
+            2,
+        ),
+        3,
+        2,
+        -1,
+        0,
+    )
     expected = [[True, True], [False, True]]
     result = (my_array.is_equal(another_array)).values
     assert result == expected
 
     # Testing two (2, 2) float arrays (is_equal)
-    my_array = Array((2, 2,), 3.0, 2.0, 1.0, 0.0)
-    another_array = Array((2, 2,), 3.0, 2.0, -1.0, 4.0)
+    my_array = Array(
+        (
+            2,
+            2,
+        ),
+        3.0,
+        2.0,
+        1.0,
+        0.0,
+    )
+    another_array = Array(
+        (
+            2,
+            2,
+        ),
+        3.0,
+        2.0,
+        -1.0,
+        4.0,
+    )
     expected = [[True, True], [False, False]]
     result = (my_array.is_equal(another_array)).values
     assert result == expected
 
     # Testing two (2, 2) bool arrays (is_equal)
-    my_array = Array((2, 2,), True, False, False, True)
-    another_array = Array((2, 2,), False, False, False, True)
+    my_array = Array(
+        (
+            2,
+            2,
+        ),
+        True,
+        False,
+        False,
+        True,
+    )
+    another_array = Array(
+        (
+            2,
+            2,
+        ),
+        False,
+        False,
+        False,
+        True,
+    )
     expected = [[False, True], [True, True]]
     result = (my_array.is_equal(another_array)).values
     assert result == expected
 
     # Testing one (2, 2) float array and one scalar (is_equal)
-    my_array = Array((2, 2,), 3.0, 2.0, 1.0, 0.0)
+    my_array = Array(
+        (
+            2,
+            2,
+        ),
+        3.0,
+        2.0,
+        1.0,
+        0.0,
+    )
     scalar = 2.0
     expected = [[False, True], [False, False]]
     result = (my_array.is_equal(scalar)).values
@@ -314,13 +490,13 @@ def test_mean_2d():
     # Testing one (2, 2) float array (mean_element)
     my_array = Array((4,), 3.0, -2.0, 1.0, 0.0)
     expected = (3.0 - 2.0 + 1.0 + 0.0) / 4
-    result = (my_array.mean_element())
+    result = my_array.mean_element()
     assert result == expected
 
     # Testing one (2, 2) float array(mean_element)
     my_array = Array((4,), 3, 2, -1, 0)
     expected = (3 + 2 - 1 + 0) / 4
-    result = (my_array.mean_element())
+    result = my_array.mean_element()
     assert result == expected
 
 

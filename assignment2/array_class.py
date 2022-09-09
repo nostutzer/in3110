@@ -5,8 +5,8 @@ Array class for assignment 2
 import itertools as iter
 import copy
 
-class Array:
 
+class Array:
     def __init__(self, shape, *values):
         """Initialize an array of 1-dimensionality. Elements can only be of type:
 
@@ -28,14 +28,12 @@ class Array:
             ValueError: If the number of values does not fit with the shape.
         """
 
-
-        self.num_values = 1     # Number of elements stored in Array class
+        self.num_values = 1  # Number of elements stored in Array class
         for dim in shape:
-            self.num_values *= dim 
+            self.num_values *= dim
 
         if self.num_values != len(values):
             raise ValueError("Number of elements and provided elements are not equal.")
-        
 
         if not isinstance(shape, tuple):
             raise TypeError("Input shape must be of type tuple.")
@@ -45,8 +43,12 @@ class Array:
                 message = f"Array value {value} if of type {type(value)}. Only integers, floats or boolean values are permitted."
                 raise TypeError(message)
 
-        if len(values) > 1:                 # We only need to assertt homogeneity if there is more than one elements in the array.
-            self.datatype = type(values[0]) # Defining the datatype of the Array values from the first element of the provided values.
+        if (
+            len(values) > 1
+        ):  # We only need to assertt homogeneity if there is more than one elements in the array.
+            self.datatype = type(
+                values[0]
+            )  # Defining the datatype of the Array values from the first element of the provided values.
             for value in values[1:]:
                 if not type(value) == self.datatype:
                     message = f"The array elements must be of the same datatype. Currently both {self.datatype} and {type(value)} are contained in array."
@@ -55,31 +57,38 @@ class Array:
         self.shape = shape
         self.values_flat = list(values)
 
-        
-        self.values = 0     # Inializing values with zero before filling with correct values
+        self.values = (
+            0  # Inializing values with zero before filling with correct values
+        )
 
         if len(shape) > 1:
-            for i in shape[::-1]:                                               # Generating nested list of zeros with correct shape.
-                self.values = [copy.deepcopy(self.values) for _ in range(i)]    # Using copy.deepcopy() from Python's standard library
-                                                                                # To avoid linking list elements though referencing.
-            
+            for i in shape[::-1]:  # Generating nested list of zeros with correct shape.
+                self.values = [
+                    copy.deepcopy(self.values) for _ in range(i)
+                ]  # Using copy.deepcopy() from Python's standard library
+                # To avoid linking list elements though referencing.
+
             for index in iter.product(*map(range, shape)):
-                idx = index[0] # Initializing flattened index as "x" index
-        
-                lst = self.values[idx]  # Filling values nested list with values from flattened values list implicetly through referencing
-                counter = 0 # Empty counter
+                idx = index[0]  # Initializing flattened index as "x" index
+
+                lst = self.values[
+                    idx
+                ]  # Filling values nested list with values from flattened values list implicetly through referencing
+                counter = 0  # Empty counter
 
                 for i, sh in zip(index[1:], shape[1:]):
-                    idx = sh * idx + i    # Iterative solving for flattened index
+                    idx = sh * idx + i  # Iterative solving for flattened index
                     if counter < len(shape[2:]):
                         lst = lst[i]
                     else:
-                        lst[i] = self.values_flat[idx]  # Setting value from flattened values through referencing
-        
-                    counter += 1    # Updating counter
+                        lst[i] = self.values_flat[
+                            idx
+                        ]  # Setting value from flattened values through referencing
+
+                    counter += 1  # Updating counter
         else:
             self.values = list(values)
-        
+
     def __getitem__(self, idx):
         """Returns Array element at given index
 
@@ -87,7 +96,6 @@ class Array:
             idx (int): Index at which Array element is to be returned.
         """
         return self.values[idx]
-
 
     def __str__(self):
         """Returns a nicely printable string representation of the array.
@@ -138,13 +146,13 @@ class Array:
             Array: the sum as a new array.
 
         """
-        if not isinstance(other, Array):    
-            
+        if not isinstance(other, Array):
+
             new_values = []
             if isinstance(other, (int, float)):
                 for value in self.values_flat:
                     new_values.append(other + value)
-            
+
             if isinstance(other, (bool)):
                 return NotImplemented
         else:
@@ -153,7 +161,6 @@ class Array:
                 return NotImplemented
 
         return Array(self.shape, *new_values)
-
 
     def __sub__(self, other):
         """Element-wise subtracts an Array or number from this Array.
@@ -180,7 +187,6 @@ class Array:
                 new_values.append(self.values_flat[i] - other.values_flat[i])
             return Array(self.shape, *new_values)
 
-
     def __rsub__(self, other):
         """Element-wise subtracts this Array from a number or Array.
 
@@ -194,8 +200,8 @@ class Array:
             Array: the difference as a new array.
 
         """
-        if not isinstance(other, Array):    
-            
+        if not isinstance(other, Array):
+
             new_values = []
 
             if isinstance(other, (int, float)):
@@ -236,7 +242,6 @@ class Array:
                 new_values.append(self.values_flat[i] * other.values_flat[i])
             return Array(self.shape, *new_values)
 
-
     def __rmul__(self, other):
         """Element-wise multiplies this Array with a number or array.
 
@@ -253,8 +258,8 @@ class Array:
         # Hint: this solution/logic applies for all r-methods
         # return self.__mul__(other)
 
-        if not isinstance(other, Array):    
-    
+        if not isinstance(other, Array):
+
             new_values = []
 
             if isinstance(other, (int, float)):
@@ -288,16 +293,15 @@ class Array:
         else:
             if isinstance(other, Array):
                 if self.datatype != other.datatype:
-                    return False 
+                    return False
                 elif self.shape != other.shape:
                     return False
-            
+
             bools = self.is_equal(other)
             if False in bools:
                 return False
-            else: 
+            else:
                 return True
-
 
     def is_equal(self, other):
         """Compares an Array element-wise with another Array or number.
@@ -323,8 +327,10 @@ class Array:
             new_values = []
             if isinstance(other, Array):
                 if self.shape != other.shape:
-                    raise ValueError("To compare two objects of type Array their shapes must match.")
-                
+                    raise ValueError(
+                        "To compare two objects of type Array their shapes must match."
+                    )
+
                 for i in range(self.num_values):
                     new_values.append(self.values_flat[i] == other.values_flat[i])
 
@@ -345,16 +351,19 @@ class Array:
         """
 
         if self.datatype == bool:
-            raise TypeError("Can only find minimum of array if it is of datatype integer of float.")
+            raise TypeError(
+                "Can only find minimum of array if it is of datatype integer of float."
+            )
 
-        min_elem = self.values_flat[0] # Initializing minimum value with first array element
+        min_elem = self.values_flat[
+            0
+        ]  # Initializing minimum value with first array element
 
         for value in self.values_flat[1:]:
             if value < min_elem:
                 min_elem = value
 
         return min_elem
-
 
     def mean_element(self):
         """Returns the mean value of an array
@@ -366,16 +375,16 @@ class Array:
         """
 
         if self.datatype == bool:
-                raise TypeError("Can only find mean of array if it is of datatype integer of float.")
+            raise TypeError(
+                "Can only find mean of array if it is of datatype integer of float."
+            )
 
         mean = 0
         for value in self.values_flat:
-            mean += value           # Cumulative sum of array elements
+            mean += value  # Cumulative sum of array elements
 
         N = 1
         for dim in self.shape:
-            N *= dim                # Total number of elements in array along all dimensions
-        
-        return mean / N 
+            N *= dim  # Total number of elements in array along all dimensions
 
-    
+        return mean / N
