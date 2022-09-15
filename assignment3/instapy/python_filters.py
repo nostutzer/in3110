@@ -23,11 +23,15 @@ def python_color2gray(image: np.array) -> np.array:
         0.07,
     ]  # Red, Green and Blue (RGB) weights for converting color to grayscale
 
-    for row in range(num_of_rows):
+    for row in range(num_of_rows):  # Looping over input image
         for column in range(num_of_columns):
             for color in range(num_of_colors):
-                weighted_colors = weights[color] * image[row, column, color]
-                gray_image[row, column] += weighted_colors.astype("uint8")
+                weighted_colors = (
+                    weights[color] * image[row, column, color]
+                )  # Weight input colors
+                gray_image[row, column] += weighted_colors.astype(
+                    "uint8"
+                )  # Perform weighted color sum and assign values to output image
 
     return gray_image
 
