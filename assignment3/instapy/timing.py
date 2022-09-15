@@ -27,12 +27,22 @@ def time_one(filter_function: Callable, *arguments, calls: int = 3) -> float:
             The number of times to call the function,
             for measurement
     Returns:
-        time (float):
+        average_runtime (float):
             The average time (in seconds) to run filter_function(*arguments)
     """
     # run the filter function `calls` times
     # return the _average_ time of one call
-    ...
+    average_runtime = 0
+
+    for i in range(calls):
+        initial_time = time.time()  # Start time in seconds
+        filter_function(*arguments)
+        final_time = time.time()  # Final time in secods
+        average_runtime += final_time - initial_time  # Cumulative sum of runtimes
+
+    average_runtime /= calls  # Converting cumulative runtime sum to average time
+
+    return average_runtime
 
 
 def make_reports(filename: str = "test/rain.jpg", calls: int = 3):
@@ -43,32 +53,46 @@ def make_reports(filename: str = "test/rain.jpg", calls: int = 3):
     Args:
         filename (str): the image file to use
     """
-
-    # load the image
-    image = ...
-    # print the image name, width, height
-    ...
-    # iterate through the filters
-    filter_names = ...
-    for filter_name in filter_names:
-        # get the reference filter function
-        reference_filter = ...
-        # time the reference implementation
-        reference_time = ...
-        print(
-            f"Reference (pure Python) filter time {filter_name}: {reference_time:.3}s ({calls=})"
+    with open("timing-report.txt", "w") as report_file:  # Making timing report file
+        # load the image
+        image = io.read_image(filename)
+        image_shape = image.shape
+        # print the image name, width, height
+        message = (
+            f"Timing performed using {filename}: {image_shape[0]}x{image_shape[1]}"
         )
-        # iterate through the implementations
-        implementations = ...
-        for implementation in implementations:
-            filter = ...
-            # time the filter
-            filter_time = ...
-            # compare the reference time to the optimized time
-            speedup = ...
-            print(
-                f"Timing: {implementation} {filter_name}: {filter_time:.3}s ({speedup=:.2f}x)"
-            )
+        print(message)
+        report_file.write(message + "\n")
+        # iterate through the filters
+        filter_names = ["color2gray"]
+        for filter_name in filter_names:
+            # get the reference filter function
+            reference_filter = "color2gray"
+            reference_implementation = "python"
+            # time the reference implementation
+
+            reference_filter_func = instapy.get_filter(
+                reference_filter, reference_implementation
+            )  # Hardcoding "python" as reference implementation
+
+            reference_time = time_one(reference_filter_func, image, calls=calls)
+
+            message = f"Reference (pure Python) filter time {filter_name}: {reference_time:.3}s ({calls=})"
+            print(message)
+            report_file.write(message + "\n")
+
+            # iterate through the implementations
+            implementations = ["numpy", "numba", "cython"]
+            for implementation in implementations:
+                filter = instapy.get_filter(filter_name, implementation)
+                # time the filter
+                filter_time = time_one(filter, image, calls=calls)
+                # compare the reference time to the optimized time
+                speedup = reference_time / filter_time
+
+                message = f"Timing: {implementation} {filter_name}: {filter_time:.3}s ({speedup=:.2f}x)"
+                print(message)
+                report_file.write(message + "\n")
 
 
 if __name__ == "__main__":
