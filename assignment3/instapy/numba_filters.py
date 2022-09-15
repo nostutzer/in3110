@@ -3,9 +3,9 @@ from numba import jit
 import numpy as np
 
 
-@jit(nopython=True)
+@jit  # (nopython=True, cache=True)
 def numba_color2gray(image: np.array) -> np.array:
-    """Convert rgb pixel array to grayscale
+    """Convert rgb pixel array to grayscale using just-in-time compiled python code
 
     Args:
         image (np.array)
@@ -14,8 +14,9 @@ def numba_color2gray(image: np.array) -> np.array:
     """
     gray_image = np.zeros_like(
         image[..., 0]
-    )  # Only need one color channel for grayscale. Using zeros instead of empty to avoid empty containing uninitialized values.
-    # iterate through the pixels, and apply the grayscale transform
+    )  # Only need one color channel for grayscale.
+    # Using zeros instead of empty to avoid empty containing uninitialized values.
+
     num_of_rows, num_of_columns, num_of_colors = image.shape
 
     weights = [
@@ -37,23 +38,41 @@ def numba_color2gray(image: np.array) -> np.array:
     return gray_image
 
 
+@jit  # (nopython=True, cache=True)
 def numba_color2sepia(image: np.array) -> np.array:
-    """Convert rgb pixel array to sepia
+    """Convert rgb pixel array to sepia using just-in-time compiled python code
 
     Args:
         image (np.array)
     Returns:
         np.array: sepia_image
     """
-    sepia_image = np.empty_like(image)
-    # Iterate through the pixels
-    # applying the sepia matrix
+    sepia_image = np.zeros(
+        image.shape, dtype=float
+    )  # Making sure dtype of initial zeros image is float
+    # to avoid overflow in intermediate calculations
 
-    ...
+    sepia_matrix = [
+        [0.393, 0.769, 0.189],
+        [0.349, 0.686, 0.168],
+        [0.272, 0.534, 0.131],
+    ]
 
-    # Return image
-    # don't forget to make sure it's the right type!
-    return sepia_image
+    num_of_rows, num_of_columns, num_of_colors = image.shape
 
+    for row in range(num_of_rows):  # Looping over input image
+        for column in range(num_of_columns):
+            for out_color in range(num_of_colors):
+                for in_color in range(num_of_colors):
+                    weighted_colors = (
+                        sepia_matrix[out_color][in_color] * image[row, column, in_color]
+                    )  # Computing weighted color matrix product
+                    sepia_image[
+                        row, column, out_color
+                    ] += weighted_colors  # Summing weighted color values
 
-...
+                sepia_image[row, column, out_color] = min(
+                    255, sepia_image[row, column, out_color]
+                )  # Cliping max value to max allowed value 255
+
+    return sepia_image.astype("uint8")  # Converting to correct dtype

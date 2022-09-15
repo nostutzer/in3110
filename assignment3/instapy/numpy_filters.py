@@ -5,7 +5,7 @@ import numpy as np
 
 
 def numpy_color2gray(image: np.array) -> np.array:
-    """Convert rgb pixel array to grayscale
+    """Convert rgb pixel array to grayscale using numpy
 
     Args:
         image (np.array)
@@ -31,7 +31,7 @@ def numpy_color2gray(image: np.array) -> np.array:
 
 
 def numpy_color2sepia(image: np.array, k: Optional[float] = 1) -> np.array:
-    """Convert rgb pixel array to sepia
+    """Convert rgb pixel array to sepia using numpy
 
     Args:
         image (np.array)
@@ -51,18 +51,27 @@ def numpy_color2sepia(image: np.array, k: Optional[float] = 1) -> np.array:
         # validate k (optional)
         raise ValueError(f"k must be between [0-1], got {k=}")
 
-    sepia_image = ...
+    # sepia_image = ...
 
     # define sepia matrix (optional: with `k` tuning parameter for bonus task 13)
-    sepia_matrix = ...
+    sepia_matrix = np.array(
+        [
+            [0.393, 0.769, 0.189],
+            [0.349, 0.686, 0.168],
+            [0.272, 0.534, 0.131],
+        ]
+    )
 
     # HINT: For version without adaptive sepia filter, use the same matrix as in the pure python implementation
     # use Einstein sum to apply pixel transform matrix
     # Apply the matrix filter
-    sepia_image = ...
+    sepia_image = image.dot(
+        sepia_matrix.T
+    )  # Performing matrix product between image and sepia matrix
 
     # Check which entries have a value greater than 255 and set it to 255 since we can not display values bigger than 255
-    ...
+    sepia_image = np.minimum(
+        sepia_image, 255
+    )  # Clipping max value of sepia image to 255.
 
-    # Return image (make sure it's the right type!)
-    return sepia_image
+    return sepia_image.astype("uint8")

@@ -64,7 +64,7 @@ def make_reports(filename: str = "test/rain.jpg", calls: int = 3):
         print(message)
         report_file.write(message + "\n")
         # iterate through the filters
-        filter_names = ["color2gray"]
+        filter_names = ["color2gray", "color2sepia"]
         for filter_name in filter_names:
             # get the reference filter function
             reference_filter = "color2gray"
@@ -97,4 +97,4 @@ def make_reports(filename: str = "test/rain.jpg", calls: int = 3):
 
 if __name__ == "__main__":
     # run as `python -m instapy.timing`
-    make_reports()
+    make_reports(calls=10)
