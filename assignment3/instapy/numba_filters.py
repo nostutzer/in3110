@@ -3,6 +3,7 @@ from numba import jit
 import numpy as np
 
 
+@jit(nopython=True)
 def numba_color2gray(image: np.array) -> np.array:
     """Convert rgb pixel array to grayscale
 
@@ -11,10 +12,28 @@ def numba_color2gray(image: np.array) -> np.array:
     Returns:
         np.array: gray_image
     """
-    gray_image = np.empty_like(image)
+    gray_image = np.zeros_like(
+        image[..., 0]
+    )  # Only need one color channel for grayscale. Using zeros instead of empty to avoid empty containing uninitialized values.
     # iterate through the pixels, and apply the grayscale transform
+    num_of_rows, num_of_columns, num_of_colors = image.shape
 
-    ...
+    weights = [
+        0.21,
+        0.72,
+        0.07,
+    ]  # Red, Green and Blue (RGB) weights for converting color to grayscale
+
+    for row in range(num_of_rows):  # Looping over input image
+        for column in range(num_of_columns):
+            for color in range(num_of_colors):
+                weighted_colors = (
+                    weights[color] * image[row, column, color]
+                )  # Weight input colors
+                gray_image[row, column] += int(
+                    weighted_colors
+                )  # Perform weighted color sum and assign values to output image
+
     return gray_image
 
 

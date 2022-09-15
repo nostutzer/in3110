@@ -13,12 +13,21 @@ def numpy_color2gray(image: np.array) -> np.array:
         np.array: gray_image
     """
 
-    gray_image = np.empty_like(image)
+    # Only need one color channel for grayscale. Using zeros instead of empty to avoid empty containing uninitialized values.
+    weights = np.array(
+        [
+            0.21,
+            0.72,
+            0.07,
+        ]
+    )  # Red, Green and Blue (RGB) weights for converting color to grayscale
 
-    # Hint: use numpy slicing in order to have fast vectorized code
-    ...
-    # Return image (make sure it's the right type!)
-    return gray_image
+    weighted_image = (
+        image[:, :, :] * weights[None, None, :]
+    )  # Weighting color values through broadcasting
+    gray_image = np.sum(weighted_image, axis=2)  # Performing weighted sum over colors
+
+    return gray_image.astype("uint8")
 
 
 def numpy_color2sepia(image: np.array, k: Optional[float] = 1) -> np.array:
