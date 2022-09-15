@@ -11,10 +11,24 @@ def python_color2gray(image: np.array) -> np.array:
     Returns:
         np.array: gray_image
     """
-    gray_image = np.empty_like(image)
+    gray_image = np.zeros_like(
+        image[..., 0]
+    )  # Only need one color channel for grayscale. Using zeros instead of empty to avoid empty containing uninitialized values.
     # iterate through the pixels, and apply the grayscale transform
+    num_of_rows, num_of_columns, num_of_colors = image.shape
 
-    ...
+    weights = [
+        0.21,
+        0.72,
+        0.07,
+    ]  # Red, Green and Blue (RGB) weights for converting color to grayscale
+
+    for row in range(num_of_rows):
+        for column in range(num_of_columns):
+            for color in range(num_of_colors):
+                weighted_colors = weights[color] * image[row, column, color]
+                gray_image[row, column] += weighted_colors.astype("uint8")
+
     return gray_image
 
 
