@@ -1,0 +1,5 @@
+numpy==1.23.3
+numba==0.56.2
+cython==0.29.32
+pillow==9.2.0
+line-profiler==3.5.1
