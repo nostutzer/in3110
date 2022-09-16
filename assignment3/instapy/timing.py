@@ -67,17 +67,16 @@ def make_reports(filename: str = "test/rain.jpg", calls: int = 3):
         filter_names = ["color2gray", "color2sepia"]
         for filter_name in filter_names:
             # get the reference filter function
-            reference_filter = "color2gray"
+            reference_filter = filter_name
             reference_implementation = "python"
             # time the reference implementation
 
             reference_filter_func = instapy.get_filter(
                 reference_filter, reference_implementation
             )  # Hardcoding "python" as reference implementation
-
             reference_time = time_one(reference_filter_func, image, calls=calls)
 
-            message = f"Reference (pure Python) filter time {filter_name}: {reference_time:.3}s ({calls=})"
+            message = f"Reference (pure Python) filter time {reference_filter}: {reference_time:.3}s ({calls=})"
             print(message)
             report_file.write(message + "\n")
 
