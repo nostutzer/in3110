@@ -139,19 +139,10 @@ def main(argv=None):
         filter = "color2gray"
         if out_file:
             out_name = out_file.split(".")
-            out_file = out_name[0] + "_gray." + out_name[1]
-        # if implementation == "numpy":
-        #     arguments.append(
-        #         (
-        #             filename,
-        #             out_file,
-        #             implementation,
-        #             filter,
-        #             scaleing,
-        #         )
-        #     )
-        # else:
-        arguments.append((filename, out_file, implementation, filter, scaleing))
+            out_name = out_name[0] + "_gray." + out_name[1]
+        else:
+            out_name = out_file
+        arguments.append((filename, out_name, implementation, filter, scaleing))
 
         if print_runtime:  # Running timing of sepia filter
             filter_func = instapy.get_filter(filter, implementation)
@@ -164,8 +155,10 @@ def main(argv=None):
         filter = "color2sepia"
         if out_file:
             out_name = out_file.split(".")
-            out_file = out_name[0] + "_sepia." + out_name[1]
-        arguments.append((filename, out_file, implementation, filter, scaleing))
+            out_name = out_name[0] + "_sepia." + out_name[1]
+        else:
+            out_name = out_file
+        arguments.append((filename, out_name, implementation, filter, scaleing))
 
         if print_runtime:  # Running timing of sepia filter
             filter_func = instapy.get_filter(filter, implementation)
