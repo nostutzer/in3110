@@ -92,8 +92,8 @@ cpdef np.ndarray[np.uint8_t, ndim=3] cython_color2sepia(np.ndarray[np.uint8_t, n
     
     for row in range(num_of_rows):  # Looping over input image
         for column in range(num_of_columns):
-            weighted_colors = 0
             for out_color in range(num_of_colors):
+                weighted_colors = 0
                 for in_color in range(num_of_colors):
                     weighted_colors += sepia_matrix[out_color, in_color] * image[row, column, in_color]    # Weight input colors
                 sepia_image[row, column, out_color] = min(255, weighted_colors)
