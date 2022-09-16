@@ -67,19 +67,23 @@ def main(argv=None):
         "--implementation",
         help="Implementation of filter function, e.g. python, cython etc.",
         default="python",
+        choices=["python", "numba", "numpy", "cython"],
         type=str,
     )
 
     parser.add_argument(
-        "-f",
-        "--filter",
-        help="Filter to apply; 'color2gray' or 'color2sepia'.",
-        default="color2gray",
-        type=str,
+        "-g",
+        "--gray",
+        help="Apply grayscale filter to input image.",
+        action="store_true",
     )
 
     parser.add_argument(
-        "-s",
+        "-se", "--sepia", help="Apply sepia filter to input image.", action="store_true"
+    )
+
+    parser.add_argument(
+        "-sc",
         "--scale",
         help="Downscaling to apply to height/width of image. If set to 1 the original image is used.",
         default=1,
@@ -89,11 +93,29 @@ def main(argv=None):
     # parse arguments and call run_filter
     args = parser.parse_args()  # Getting commandline arguments from parser object
     filename = args.file  # Input image filename
-    outfile = args.out  # Output filename
+    out_file = args.out  # Output filename
     implementation = args.implementation  # Which filter implementation to use
-    filter = args.filter  # Filter to apply to input image
+    use_gray = args.gray  # Filter to apply to input image
+    use_sepia = args.sepia  # Filter to apply to input image
     scaleing = args.scale  # Scaling to apply to image height/width
 
-    run_filter(
-        filename, outfile, implementation, filter, scaleing
-    )  # Applying filter to specified command line arguments
+    if not use_gray and not use_sepia:
+        raise ValueError("At least one filter must be provided.")
+
+    arguments = []
+    if use_gray:
+        filter = "color2gray"
+        if out_file:
+            out_name = out_file.split(".")
+            out_file = out_name[0] + "_gray." + out_name[1]
+        arguments.append((filename, out_file, implementation, filter, scaleing))
+
+    if use_sepia:
+        filter = "color2sepia"
+        if out_file:
+            out_name = out_file.split(".")
+            out_file = out_name[0] + "_sepia." + out_name[1]
+        arguments.append((filename, out_file, implementation, filter, scaleing))
+
+    for args in arguments:
+        run_filter(*args)  # Applying filter to specified command line arguments
