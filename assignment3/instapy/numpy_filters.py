@@ -13,7 +13,6 @@ def numpy_color2gray(image: np.array) -> np.array:
         np.array: gray_image
     """
 
-    # Only need one color channel for grayscale. Using zeros instead of empty to avoid empty containing uninitialized values.
     weights = np.array(
         [
             0.21,
@@ -22,10 +21,11 @@ def numpy_color2gray(image: np.array) -> np.array:
         ]
     )  # Red, Green and Blue (RGB) weights for converting color to grayscale
 
-    weighted_image = (
-        image[:, :, :] * weights[None, None, :]
-    )  # Weighting color values through broadcasting
-    gray_image = np.sum(weighted_image, axis=2)  # Performing weighted sum over colors
+    weights = (
+        np.ones((3, 3)) * weights[:, None]
+    )  # Broadcasting weight copies to output RGB rows
+    # to construct transformation matrix operator
+    gray_image = image.dot(weights)  # Performing color-to-grayscale operation
 
     return gray_image.astype("uint8")
 

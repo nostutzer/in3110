@@ -11,11 +11,11 @@ cpdef np.ndarray[np.uint8_t, ndim=3] cython_color2gray(np.ndarray[np.uint8_t, nd
     Returns:
         np.array: gray_image
     """
-    cdef np.ndarray[np.uint8_t, ndim=2] gray_image 
+    cdef np.ndarray[np.uint8_t, ndim=3] gray_image 
     
     gray_image= np.zeros_like(
-        image[..., 0], dtype = np.uint8
-    )  # Only need one color channel for grayscale. Using zeros instead of empty to avoid empty containing uninitialized values.
+        image, dtype = np.uint8
+    )  # Using zeros instead of empty to avoid empty containing uninitialized values.
     # iterate through the pixels, and apply the grayscale transform
     
     cdef int num_of_rows    # Defining variables to store length of image axes
@@ -24,7 +24,8 @@ cpdef np.ndarray[np.uint8_t, ndim=3] cython_color2gray(np.ndarray[np.uint8_t, nd
 
     cdef int row            # Defining loop variables
     cdef int column
-    cdef int color
+    cdef int in_color
+    cdef int out_color
 
     cdef double weighted_colors # Defining variable to temporarily store weighted color value
 
@@ -43,9 +44,10 @@ cpdef np.ndarray[np.uint8_t, ndim=3] cython_color2gray(np.ndarray[np.uint8_t, nd
     
     for row in range(num_of_rows):  # Looping over input image
         for column in range(num_of_columns):
-            for color in range(num_of_colors):
-                weighted_colors = weights[color] * image[row, column, color]    # Weight input colors
-                gray_image[row, column] += int(weighted_colors)                 # Perform weighted color sum and assign values to output image
+            for in_color in range(num_of_colors):
+                weighted_colors = weights[in_color] * image[row, column, in_color]    # Weight input colors
+                for out_color in range(num_of_colors):
+                    gray_image[row, column, out_color] += int(weighted_colors)                 # Perform weighted color sum and assign values to output image
 
     return gray_image
 
