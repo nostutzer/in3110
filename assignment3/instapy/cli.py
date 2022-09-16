@@ -1,12 +1,14 @@
 """Command-line (script) interface to instapy"""
 
 import argparse
+from email.mime import image
 import sys
 
 import numpy as np
 from PIL import Image
 
 import instapy
+from instapy import timing
 from . import io
 
 
@@ -90,6 +92,13 @@ def main(argv=None):
         type=int,
     )
 
+    parser.add_argument(
+        "-r",
+        "--runtime",
+        help="Print average runtime of pecified filter(s) over three calls.",
+        action="store_true",
+    )
+
     # parse arguments and call run_filter
     args = parser.parse_args()  # Getting commandline arguments from parser object
     filename = args.file  # Input image filename
@@ -98,24 +107,38 @@ def main(argv=None):
     use_gray = args.gray  # Filter to apply to input image
     use_sepia = args.sepia  # Filter to apply to input image
     scaleing = args.scale  # Scaling to apply to image height/width
-
+    print_runtime = args.runtime  # Whether to compute runtime of tilter(s)
     if not use_gray and not use_sepia:
         raise ValueError("At least one filter must be provided.")
 
-    arguments = []
-    if use_gray:
+    arguments = []  # List to store positional arguments of filter function
+    if use_gray:  # Structuring arguments for sepia filter function
         filter = "color2gray"
         if out_file:
             out_name = out_file.split(".")
             out_file = out_name[0] + "_gray." + out_name[1]
         arguments.append((filename, out_file, implementation, filter, scaleing))
 
-    if use_sepia:
+        if print_runtime:  # Running timing of sepia filter
+            filter_func = instapy.get_filter(filter, implementation)
+            image = io.read_image(filename)
+            # time the filter
+            runtime = timing.time_one(filter_func, image, calls=3)
+            print(f"Average time of {implementation}_{filter} over 3 runs: {runtime}s")
+
+    if use_sepia:  # Structuring arguments for sepia filter function
         filter = "color2sepia"
         if out_file:
             out_name = out_file.split(".")
             out_file = out_name[0] + "_sepia." + out_name[1]
         arguments.append((filename, out_file, implementation, filter, scaleing))
+
+        if print_runtime:  # Running timing of sepia filter
+            filter_func = instapy.get_filter(filter, implementation)
+            image = io.read_image(filename)
+            # time the filter
+            runtime = timing.time_one(filter_func, image, calls=3)
+            print(f"Average time of {implementation}_{filter} over 3 runs: {runtime}s")
 
     for args in arguments:
         run_filter(*args)  # Applying filter to specified command line arguments
