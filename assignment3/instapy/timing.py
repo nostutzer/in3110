@@ -35,9 +35,9 @@ def time_one(filter_function: Callable, *arguments, calls: int = 3) -> float:
     average_runtime = 0
 
     for i in range(calls):
-        initial_time = time.time()  # Start time in seconds
+        initial_time = time.perf_counter()  # Start time in seconds
         filter_function(*arguments)
-        final_time = time.time()  # Final time in secods
+        final_time = time.perf_counter()  # Final time in secods
         average_runtime += final_time - initial_time  # Cumulative sum of runtimes
 
     average_runtime /= calls  # Converting cumulative runtime sum to average time
