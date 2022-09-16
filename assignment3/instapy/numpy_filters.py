@@ -51,8 +51,6 @@ def numpy_color2sepia(image: np.array, k: Optional[float] = 1) -> np.array:
         # validate k (optional)
         raise ValueError(f"k must be between [0-1], got {k=}")
 
-    # sepia_image = ...
-
     # define sepia matrix (optional: with `k` tuning parameter for bonus task 13)
     sepia_matrix = np.array(
         [
@@ -62,8 +60,14 @@ def numpy_color2sepia(image: np.array, k: Optional[float] = 1) -> np.array:
         ]
     )
 
-    # HINT: For version without adaptive sepia filter, use the same matrix as in the pure python implementation
-    # use Einstein sum to apply pixel transform matrix
+    tuning_matrix_diagonal = (
+        np.ones(3) - sepia_matrix.diagonal()
+    )  # Modifying sepia matrix for tunable filter
+    tuning_matrix_diagonal *= -(1 - k)
+    tuning_matrix = sepia_matrix * (1 - k)
+    np.fill_diagonal(tuning_matrix, tuning_matrix_diagonal)
+    sepia_matrix -= tuning_matrix
+
     # Apply the matrix filter
     sepia_image = image.dot(
         sepia_matrix.T

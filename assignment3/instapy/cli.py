@@ -11,6 +11,8 @@ import instapy
 from instapy import timing
 from . import io
 
+from typing import Optional
+
 
 def run_filter(
     file: str,
@@ -18,6 +20,7 @@ def run_filter(
     implementation: str = "python",
     filter: str = "color2gray",
     scale: int = 1,
+    k: Optional[float] = 1,
 ) -> None:
     """Run the selected filter"""
     # load the image from a file
@@ -40,7 +43,12 @@ def run_filter(
 
     # Apply the filter
     filter_func = instapy.get_filter(filter, implementation)  # Defining filter function
-    filtered = filter_func(image)
+    if implementation == "numpy" and "sepia" in filter:
+        filtered = filter_func(
+            image, k
+        )  # Using optional sepia filter tuning for numpy implementation
+    else:
+        filtered = filter_func(image)
     # print("filtered", filtered)
     if out_file:
         # save the file
@@ -93,6 +101,14 @@ def main(argv=None):
     )
 
     parser.add_argument(
+        "-t",
+        "--tune",
+        help="""Tuning parameter for sepia filter. Value 1 corresponds to no sepia filter, and 0 to fully sepia filtered. 
+                NOTE: only compatible with Numpy implementation.""",
+        default=1,
+        type=float,
+    )
+    parser.add_argument(
         "-r",
         "--runtime",
         help="Print average runtime of pecified filter(s) over three calls.",
@@ -108,8 +124,15 @@ def main(argv=None):
     use_sepia = args.sepia  # Filter to apply to input image
     scaleing = args.scale  # Scaling to apply to image height/width
     print_runtime = args.runtime  # Whether to compute runtime of tilter(s)
+    sepia_tuning = args.tune
+
     if not use_gray and not use_sepia:
         raise ValueError("At least one filter must be provided.")
+
+    if sepia_tuning != 1 and not implementation == "numpy":
+        raise NotImplementedError(
+            "Tuning of sepia filter only implemented for Numpy implementation."
+        )
 
     arguments = []  # List to store positional arguments of filter function
     if use_gray:  # Structuring arguments for sepia filter function
@@ -117,6 +140,17 @@ def main(argv=None):
         if out_file:
             out_name = out_file.split(".")
             out_file = out_name[0] + "_gray." + out_name[1]
+        # if implementation == "numpy":
+        #     arguments.append(
+        #         (
+        #             filename,
+        #             out_file,
+        #             implementation,
+        #             filter,
+        #             scaleing,
+        #         )
+        #     )
+        # else:
         arguments.append((filename, out_file, implementation, filter, scaleing))
 
         if print_runtime:  # Running timing of sepia filter
@@ -141,4 +175,10 @@ def main(argv=None):
             print(f"Average time of {implementation}_{filter} over 3 runs: {runtime}s")
 
     for args in arguments:
-        run_filter(*args)  # Applying filter to specified command line arguments
+        if implementation == "numpy" and "sepia" in args[3]:
+            run_filter(
+                *args, sepia_tuning
+            )  # Applying filter to specified command line arguments with sepia tuning
+        else:
+            run_filter(*args)  # Applying filter to specified command line arguments
+            # for other implementations and filters than numpy_color2sepia
