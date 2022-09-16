@@ -3,7 +3,7 @@ from numba import jit
 import numpy as np
 
 
-@jit  # (nopython=True, cache=True)
+@jit(nopython=True, cache=True)
 def numba_color2gray(image: np.array) -> np.array:
     """Convert rgb pixel array to grayscale using just-in-time compiled python code
 
@@ -38,7 +38,7 @@ def numba_color2gray(image: np.array) -> np.array:
     return gray_image
 
 
-@jit  # (nopython=True, cache=True)
+@jit(nopython=True, cache=True)
 def numba_color2sepia(image: np.array) -> np.array:
     """Convert rgb pixel array to sepia using just-in-time compiled python code
 
