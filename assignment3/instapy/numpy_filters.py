@@ -60,7 +60,7 @@ def numpy_color2sepia(image: np.array, k: Optional[float] = 1) -> np.array:
         ]
     )
 
-    if k > 0:
+    if k >= 0:
         tuning_matrix_diagonal = (
             np.ones(3) - sepia_matrix.diagonal()
         )  # Modifying sepia matrix for tunable filter
