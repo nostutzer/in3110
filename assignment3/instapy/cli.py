@@ -103,7 +103,7 @@ def main(argv=None):
     parser.add_argument(
         "-t",
         "--tune",
-        help="""Tuning parameter for sepia filter. Value 1 corresponds to no sepia filter, and 0 to fully sepia filtered. 
+        help="""Tuning parameter for sepia filter. Value 0 corresponds to no sepia filter, and 1 to fully sepia filtered. 
                 NOTE: only compatible with Numpy implementation.""",
         default=1,
         type=float,
