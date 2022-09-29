@@ -6,8 +6,8 @@
 
 The `instapy` package is an image manipulation tool. It can be used both in scripts, but also has an easy to use command line interface. There are two image filters currently supported by `instapy`; a color-to-grayscale filter (`colot2gray`) and a color-to-sepia filter (`color2sepia`). As the names suggest the former converts a color image (in RGB) to a grayscale image, while the latter takes a color image and warms up its color tones using a sepia filter. Furthermore there are four implementation of each of the two filters;
 
- * `python`: An implementation of the filters which only used native `python`. NOTE that numpy is used in this case, but **only** to store the image matirx, but not for any computations.
- * `numpy`: An implementation which utilizes as `numpy`'s fast and convinient vecotorized operations.
+ * `python`: An implementation of the filters which only used native `python`. NOTE that `numpy` is used in this case, but **only** to store the image matrix, but not for any computations.
+ * `numpy`: An implementation which utilizes as `numpy`'s fast and convenient vectorized operations.
  * `numba`: An implementation which in it self looks very much like the native `python` version of the filters, but uses a just-in-time compilation provided by `numba` to speed up the filter operation.
  * `Cython`: An implementation which is written in the `Cython` `C/python` hybrid language, hence utilizing the speed advantages of typed and compiled `C` and at the same time the fast development speed of `python`'s comparatively east syntax.
 
@@ -15,10 +15,10 @@ The `instapy` package is an image manipulation tool. It can be used both in scri
 ## Installation
 ---
 
-### Creating a `conda` evironment
+### Creating a `conda` environment
 ---
 
-In orger to generate a `conda` evironment to install `instapy` in type 
+In order to generate a `conda` environment to install `instapy` in type 
 
 ```
 $ conda create --name <your environment name> python=3.10
@@ -40,13 +40,13 @@ Once inside the conda environment we can continue with the installation of `inst
 The first step in installing `instapy` is cloning the source code from GitHub by running 
 
 ```
-$ mkdir your_prefered_directory
-$ git clone https://github.uio.no/IN3110/IN3110-nilsoles.git your_prefered_directory
+$ mkdir your_preferred_directory
+$ git clone https://github.uio.no/IN3110/IN3110-nilsoles.git your_preferred_directory
 ```
 Thereafter, go into the correct directory inside the repository by running 
 
 ```
-$ cd your_prefered_directory/assignment3
+$ cd your_preferred_directory/assignment3
 ```
 Now in the `assignment3` directory we can continue installing instapy by running 
 
@@ -69,7 +69,7 @@ To install the `instapy` package the following requirements and dependencies sho
  * `pillow 9.2.0`
  * `line-profiler 3.5.1`
 
-**NOTE:** These dependencies and requirements are also specified in the `pyproject.toml` file provided in the cloned repository. Thus if you create a  `conda` environment and use pip to install the package as specified all needed dependences should automatically also be installed.
+**NOTE:** These dependencies and requirements are also specified in the `pyproject.toml` file provided in the cloned repository. Thus if you create a  `conda` environment and use pip to install the package as specified all needed dependencies should automatically also be installed.
 
 ---
 ## Usage
@@ -95,19 +95,19 @@ $ instapy <arguments>
 
 In the above the `<arguments>` can take the following arguments and flags;
 
-| Flag/argument           | Description                                                                                                                                                                                                                                                                       |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `<file>`                | (*Positional argument*) Full path to image file to perform filtering on. Must be an image format that Pillow can open.                                                                                                                                                            |
-| `-h --help`             | This prints a **help** message describing the command line usage.                                                                                                                                                                                                                 |
-| `-o --out`              | the full path (including file endig) of the output file to save filtered image in.                                                                                                                                                                                                |
-| `-g --gray`             | If this flag is supplied the grayscale filter is run                                                                                                                                                                                                                              |
-| `-se --sepia`           | If this flag is supplied the sepia filter is run                                                                                                                                                                                                                                  |
-| `-sc --scale`           | Rescaling factor to apply to image before filtering.                                                                                                                                                                                                                              |
-| `-i` `--implementation` | Which implementation of the filter to use. Valid options are `python, numba, numpy` or `cython`                                                                                                                                                                                   |
-| `-t --tune`             | With this we can tune the degree to which the sepia filter is applied to the image. The provided parameter takes vbalues between 0 and 1, for respectively a not and fully sepia filtered image. **NOTE** that this feature is only available together with the `-i numpy` flag . |
-| `-r --runtime`          | When providing this flag an average runtime of the filter (over three executions) will be printed.                                                                                                                                                                                |
+| Flag/argument           | Description                                                                                                                                                                                                                                                                      |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<file>`                | (*Positional argument*) Full path to image file to perform filtering on. Must be an image format that Pillow can open.                                                                                                                                                           |
+| `-h --help`             | This prints a **help** message describing the command line usage.                                                                                                                                                                                                                |
+| `-o --out`              | the full path (including file ending) of the output file to save filtered image in.                                                                                                                                                                                              |
+| `-g --gray`             | If this flag is supplied the grayscale filter is run                                                                                                                                                                                                                             |
+| `-se --sepia`           | If this flag is supplied the sepia filter is run                                                                                                                                                                                                                                 |
+| `-sc --scale`           | Rescaling factor to apply to image before filtering.                                                                                                                                                                                                                             |
+| `-i` `--implementation` | Which implementation of the filter to use. Valid options are `python, numba, numpy` or `cython`                                                                                                                                                                                  |
+| `-t --tune`             | With this we can tune the degree to which the sepia filter is applied to the image. The provided parameter takes values between 0 and 1, for respectively a not and fully sepia filtered image. **NOTE** that this feature is only available together with the `-i numpy` flag . |
+| `-r --runtime`          | When providing this flag an average runtime of the filter (over three executions) will be printed.                                                                                                                                                                               |
 
-To get some usefull helper text we can run 
+To get some useful helper text we can run 
 ```
 $ instapy -h
 ```
@@ -127,7 +127,7 @@ $ instapy test/rain.jpg -i python -g -sc 2 -o my_grayscale_rain.jpg
 ```
 We can also run the tool without specifying an output file (`-o`). In that case the filtered image will be displayed instead of being saved. 
 
-Let us next run both the sepia and grayscale filters with the same call, and choose the cython implementation to filter the image;
+Let us next run both the sepia and grayscale filters with the same call, and choose the `cython` implementation to filter the image;
 ```
 $ instapy test/rain.jpg -i python -g -se -sc 3
 ```
@@ -190,7 +190,7 @@ io.display(sepia_image)
 ## Tests
 In order to run the unit tests on `instapy` we need to use `pytest`. 
 
-To check if our installation of the package was successfull we can run:
+To check if our installation of the package was successfully we can run:
 
     ```
 $ python3 -m pytest -v test/test_package.py
