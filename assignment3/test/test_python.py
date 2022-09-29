@@ -1,15 +1,7 @@
 from instapy.python_filters import python_color2gray, python_color2sepia
 import numpy as np
 
-import pytest
 
-from instapy import io
-from pathlib import Path
-
-test_dir = Path(__file__).absolute().parent
-
-
-@pytest.mark.parametrize("image", [io.read_image(test_dir.joinpath("rain.jpg"))])
 def test_color2gray(image):
     # run color2gray
     gray_result = python_color2gray(image)
@@ -48,7 +40,6 @@ def test_color2gray(image):
         # Amouts to <= 2 / 255 = 0.8 % error with repsect to maximum color value 255.
 
 
-@pytest.mark.parametrize("image", [io.read_image(test_dir.joinpath("rain.jpg"))])
 def test_color2sepia(image):
     # run color2sepia
     sepia_result = python_color2sepia(image)
@@ -89,8 +80,3 @@ def test_color2sepia(image):
             out_pixel, expected_value, atol=1
         )  # Check if input and output are within value 1 of each other.
         # Amouts to <= 1 / 255 = 0.4 % error with repsect to maximum color value 255.
-
-
-if __name__ == "__main__":
-    test_color2gray(io.read_image(test_dir.joinpath("rain.jpg")))
-    test_color2sepia(io.read_image(test_dir.joinpath("rain.jpg")))

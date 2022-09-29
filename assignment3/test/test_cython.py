@@ -3,23 +3,7 @@ from instapy.cython_filters import cython_color2gray, cython_color2sepia
 import numpy.testing as nt
 import numpy as np
 
-import pytest
 
-from instapy import io
-from pathlib import Path
-
-test_dir = Path(__file__).absolute().parent
-
-
-@pytest.mark.parametrize("image", [io.read_image(test_dir.joinpath("rain.jpg"))])
-
-# NOTE that .png files are used for reference images,
-# since .jpg can have compression artifacts after I/O operations
-
-
-@pytest.mark.parametrize(
-    "reference_gray", [io.read_image(test_dir.joinpath("rain_reference_gray.png"))]
-)
 def test_color2gray(image, reference_gray):
     # run color2gray
     gray_result = cython_color2gray(image)
@@ -61,15 +45,6 @@ def test_color2gray(image, reference_gray):
     # and saved pure-python reference are similar to within 2 in pixel value
 
 
-@pytest.mark.parametrize("image", [io.read_image(test_dir.joinpath("rain.jpg"))])
-
-# NOTE that .png files are used for reference images,
-# since .jpg can have compression artifacts after I/O operations
-
-
-@pytest.mark.parametrize(
-    "reference_sepia", [io.read_image(test_dir.joinpath("rain_reference_sepia.png"))]
-)
 def test_color2sepia(image, reference_sepia):
     # run color2sepia
     sepia_result = cython_color2sepia(image)
@@ -115,17 +90,3 @@ def test_color2sepia(image, reference_sepia):
         reference_sepia, sepia_result, atol=1
     )  # Assert if cython sepia result and saved
     # pure-python reference are similar to within 1 pixel
-
-
-if __name__ == "__main__":
-    # NOTE that .png files are used for reference images,
-    # since .jpg can have compression artifacts after I/O operations
-
-    test_color2gray(
-        io.read_image(test_dir.joinpath("rain.jpg")),
-        io.read_image(test_dir.joinpath("rain_reference_gray.png")),
-    )
-    test_color2sepia(
-        io.read_image(test_dir.joinpath("rain.jpg")),
-        io.read_image(test_dir.joinpath("rain_reference_sepia.png")),
-    )
