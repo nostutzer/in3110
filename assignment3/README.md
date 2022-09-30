@@ -55,7 +55,7 @@ $ python3 -m pip install .
 ```
 If required, the `instapy` package can be installed in an editable mode by also providing the flags; `-e` or `--editable`. This is useful if you are interested in continuing to develope the package.
 
-Because `ìnstapy` has a cython implementation of the image filters we also need to compile the cython libraries. This is easily done by running
+Because `ìnstapy` has a `cython` implementation of the image filters we also need to compile the cython libraries. This is easily done by running
 
 ```
 $ python3 setup.py build_ext --inplace
