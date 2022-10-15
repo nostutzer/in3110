@@ -15,18 +15,45 @@ def find_urls(
     Returns:
         urls (set) : set with all the urls found in html text
     """
-    # create and compile regular expression(s)
 
-    urls = ...
-    # 1. find all the anchor tags, then
-    # 2. find the urls href attributes
+    # Finding all tags of the form <a stuff="..." href="...">,
+    # i.e. everything starting with "<a" and ending with ">" is collected
+    anchor_pattern = re.compile(r"<a[^>]+>", flags=re.IGNORECASE)
+    anchor_tags = re.findall(anchor_pattern, html)
+
+    url_pattern = r"""
+    href="              # URL must begin with hyper-ref
+    (?P<url>[^#\s]+)    # Find all characters but # and whitespaces
+    (?:\#|")            # Want to ignore after # or " (fragment or end of url)
+    """
+
+    url_set = set()  # Where to save extracted URLs
+
+    # Finding matches of urls in anchor tags
+    for anchor_tag in anchor_tags:
+        # Find URL, if any, in anchor tag and add it to URL set
+        search_result = re.search(url_pattern, anchor_tag, re.VERBOSE)
+        if search_result:
+            # extracting url from search result
+            url = search_result.group("url")
+            if url[:2] == "//":
+                # Add protocol from base url if missing
+                url = base_url.split("//")[0] + url
+            elif url[0] == "/":
+                # if url path only add base_url
+                url = base_url + url
+
+            url_set.add(url)
 
     # Write to file if requested
     if output:
         print(f"Writing to: {output}")
-        ...
+        with open(output, "w") as outfile:
+            for url in url_set:
+                outfile.write(url + "\n")
 
-    ...
+    # Otherwise return set of URLs
+    return url_set
 
 
 def find_articles(html: str, output=None) -> set:
@@ -70,3 +97,15 @@ def find_img_src(html: str):
         src = src_pat.find(img_tag)
         src_set.add(src)
     return src_set
+
+
+if __name__ == "__main__":
+    html = """
+    <a href="#fragment-only">anchor link</a>
+    <a id="some-id" href="/relative/path#fragment">relative link</a>
+    <a href="//other.host/same-protocol">same-protocol link</a>
+    <a href="https://example.com/test" class="test class">absolute URL</a>
+    """
+    urls = find_urls(html, base_url="https://en.wikipedia.org")
+
+    print(urls)
