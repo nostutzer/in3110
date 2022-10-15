@@ -63,14 +63,36 @@ def find_articles(html: str, output=None) -> set:
     returns:
         - (set) : a set with urls to all the articles found
     """
-    urls = ...
-    pattern = ...
-    articles = ...
+
+    # Get all urls from HTML string
+    urls = find_urls(html)
+
+    pattern = r"""
+    (?P<article>            # Name of group
+    https?://               # Match protocol
+    \w{2}\.                 # Match any language code
+    wikipedia.org/wiki/     # Wikipedia article must contain "wikipedia.org/wiki/"
+    [^:]+)                  # Exclude all links with color in them after protocol
+    """
+
+    # Empty set of article paths to fill
+    articles = set()
+
+    # Iterate though urls and add only the wikipedia articles to articles set
+    for url in urls:
+        search_result = re.search(pattern, url, re.VERBOSE)
+        if search_result:
+            article = search_result.group("article")
+            articles.add(article)
 
     # Write to file if wanted
     if output:
-        ...
-    ...
+        print(f"Writing to: {output}")
+        with open(output, "w") as outfile:
+            for article in articles:
+                outfile.write(article + "\n")
+
+    return articles
 
 
 ## Regex example
@@ -97,15 +119,3 @@ def find_img_src(html: str):
         src = src_pat.find(img_tag)
         src_set.add(src)
     return src_set
-
-
-if __name__ == "__main__":
-    html = """
-    <a href="#fragment-only">anchor link</a>
-    <a id="some-id" href="/relative/path#fragment">relative link</a>
-    <a href="//other.host/same-protocol">same-protocol link</a>
-    <a href="https://example.com/test" class="test class">absolute URL</a>
-    """
-    urls = find_urls(html, base_url="https://en.wikipedia.org")
-
-    print(urls)
