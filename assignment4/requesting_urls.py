@@ -15,6 +15,8 @@ def get_html(url: str, params: Optional[Dict] = None, output: Optional[str] = No
             URL parameters to add.
         output (str, optional):
             (optional) path where output should be saved.
+            The URL is saved to first line of output file, while the
+            HTML string is saved to the subsequent lines.
     Returns:
         html (str):
             The HTML of the page, as text.
