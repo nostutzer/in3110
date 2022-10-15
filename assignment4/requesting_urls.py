@@ -5,7 +5,9 @@ import requests
 ## -- Task 1 -- ##
 
 
-def get_html(url: str, params: Optional[Dict] = None, output: Optional[str] = None):
+def get_html(
+    url: str, params: Optional[Dict] = None, output: Optional[str] = None
+) -> str:
     """Get an HTML page and return its contents.
 
     Args:
@@ -18,7 +20,7 @@ def get_html(url: str, params: Optional[Dict] = None, output: Optional[str] = No
             The URL is saved to first line of output file, while the
             HTML string is saved to the subsequent lines.
     Returns:
-        html (str):
+        html_str (str):
             The HTML of the page, as text.
     """
     # passing the optional parameters argument to the get function

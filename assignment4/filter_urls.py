@@ -12,8 +12,11 @@ def find_urls(
     """Find all the url links in a html text using regex
     Arguments:
         html (str): html string to parse
+        base_url (str, optional): Base url used to append URLs paths to.
+        output (str, optional): Name of output file to save URLs to.
+
     Returns:
-        urls (set) : set with all the urls found in html text
+        url_set (set) : set with all the urls found in html text
     """
 
     # Finding all tags of the form <a stuff="..." href="...">,
@@ -59,9 +62,11 @@ def find_urls(
 def find_articles(html: str, output=None) -> set:
     """Finds all the wiki articles inside a html text. Make call to find urls, and filter
     arguments:
-        - text (str) : the html text to parse
+        text (str) : the html text to parse
+        output (str, optional): name of output file to save article URLs to.
+
     returns:
-        - (set) : a set with urls to all the articles found
+        articles (set) : a set with urls to all the articles found
     """
 
     # Get all urls from HTML string
