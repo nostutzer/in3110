@@ -68,16 +68,30 @@ def extract_events(table: bs4.element.Tag) -> pd.DataFrame:
     data = []
 
     # Extracts the data in table, keeping track of colspan and rowspan
-    rows = ...
+    rows = table.find_all("tr")
+    # Skipping table header
     rows = rows[1:]
     for tr in rows:
-        cells = ...
+        cells = tr.find_all("td")
         row = []
+
         for cell in cells:
-            colspan = ...
-            rowspan = ...
-            ...
-            text = ...
+            # Find all colspan and rowspan, set to None if none are found, as list
+            colspan = cell.get_attribute_list("colspan")
+            rowspan = cell.get_attribute_list("rowspan")
+
+            # Chance None col/rowspan to 1 (int) and else just change to dtype int
+            if colspan[0]:
+                colspan = int(colspan[0])
+            else:
+                colspan = 1
+
+            if rowspan[0]:
+                rowspan = int(rowspan[0])
+            else:
+                rowspan = 1
+
+            text = cell.text
             row.append(
                 TableEntry(
                     text=text,
@@ -86,17 +100,22 @@ def extract_events(table: bs4.element.Tag) -> pd.DataFrame:
                 )
             )
         data.append(row)
+
     # at this point `data` should be a table (list of lists)
     # where each item is a TableEntry with row/colspan properties
     # expand TableEntries into a dense table
     all_data = expand_row_col_span(data)
 
     # List of desired columns
-    wanted = ...
+    wanted = [
+        "Date",
+        "Venue",
+        "Type",
+    ]
 
     # Filter data and create pandas dataframe
     filtered_data = filter_data(labels, all_data, wanted)
-    df = ...
+    df = pd.DataFrame(filtered_data, columns=wanted)
 
     return df
 
@@ -137,7 +156,7 @@ def strip_text(text: str) -> str:
     return text
 
 
-def filter_data(keys: list, data: list, wanted: list):
+def filter_data(keys: list, data: list, wanted: list) -> list:
     """Filters away the columns not specified in wanted argument
 
     It is not required to use this function,
@@ -152,7 +171,19 @@ def filter_data(keys: list, data: list, wanted: list):
             This is the subset of data in `data`,
             after discarding the columns not in `wanted`.
     """
-    ...
+
+    # get index of wanted columns
+    selected_cols = [keys.index(selected) for selected in wanted]
+
+    # Iterate through unfiltered data and select only wanted columns
+    filtered_data = []
+    for row_index, row in enumerate(data):
+        filtered_row = []
+        for col_idx in selected_cols:
+            filtered_row.append(row[col_idx])
+        filtered_data.append(filtered_row)
+
+    return filtered_data
 
 
 def expand_row_col_span(data):
@@ -218,12 +249,38 @@ def expand_row_col_span(data):
     return [[entry.text for entry in row] for row in new_data]
 
 
+# if __name__ == "__main__":
+#     # test the script on the past few years by running it:
+#     for year in range(20, 23):
+#         url = (
+#             f"https://en.wikipedia.org/wiki/20{year}–{year+1}_FIS_Alpine_Ski_World_Cup"
+#         )
+#         print(url)
+#         md = time_plan(url)
+#         print(md)
+
 if __name__ == "__main__":
-    # test the script on the past few years by running it:
-    for year in range(20, 23):
-        url = (
-            f"https://en.wikipedia.org/wiki/20{year}–{year+1}_FIS_Alpine_Ski_World_Cup"
-        )
-        print(url)
-        md = time_plan(url)
-        print(md)
+
+    sample_table = """
+    <table>
+    <tr>
+        <th>Date</th>
+        <th>Venue</th>
+        <th>Type</th>
+        <th>Info</th>
+    </tr>
+    <tr>
+        <td>October</td>
+        <td rowspan="2">UiO</td>
+        <td>Assignment 3</td>
+        <td>image filters</td>
+    </tr>
+    <tr>
+        <td>November</td>
+        <td colspan="2">Assignment 4</td>
+    </tr>
+    </table>
+    """
+
+    table = BeautifulSoup(sample_table, "html.parser")
+    events = extract_events(table)
