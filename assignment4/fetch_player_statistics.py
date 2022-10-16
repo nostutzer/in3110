@@ -38,13 +38,18 @@ def find_best_players(url: str) -> None:
     # assert len(teams) == 8
 
     # Gets the player for every team and stores in dict (get_players)
-    all_players = ...
+    all_players = {team["name"]: get_players(team["url"]) for team in teams}
 
     # get player statistics for each player,
     # using get_player_stats
     for team, players in all_players.items():
-        ...
-
+        for player in players:
+            player_name = player["name"]
+            player_url = player["url"]
+            # print(all_players[team][player_name])
+            print(team, player_name, player_url)
+            player_stats = get_player_stats(player_url, team)
+            print(player_stats)
     # at this point, we should have a dict of the form:
     # {
     #     "team name": [
@@ -233,7 +238,10 @@ def get_player_stats(player_url: str, team: str) -> dict:
     soup = BeautifulSoup(html, "html.parser")
 
     # find NBA regular season section and the table in that section
-    nba_regular_season = soup.find(id="Regular_season")
+    nba_regular_season = soup.find(
+        class_="mw-headline",
+        id=re.compile(r"(NBA)|(Regular.?season)", re.IGNORECASE),
+    )
     table = nba_regular_season.find_next("table", {"class": "wikitable"})
 
     # Find column names
@@ -268,12 +276,5 @@ def get_player_stats(player_url: str, team: str) -> dict:
 # run the whole thing if called as a script, for quick testing
 if __name__ == "__main__":
     url = "https://en.wikipedia.org/wiki/2022_NBA_playoffs"
-    # players = get_players(
-    #     "https://en.wikipedia.org/wiki/2021%E2%80%9322_Golden_State_Warriors_season"
-    # )
-    # print(players)
-    stats = get_player_stats(
-        "https://en.wikipedia.org/wiki/Stephen_Curry", "Golden State"
-    )
-    print(stats)
-    # find_best_players(url)
+    find_best_players(url)
+    # get_player_stats("https://en.wikipedia.org/wiki/Stephen_Curry", "Golden State")
