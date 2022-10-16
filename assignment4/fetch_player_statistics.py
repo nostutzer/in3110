@@ -229,25 +229,38 @@ def get_player_stats(player_url: str, team: str) -> dict:
     print(f"Fetching stats for player in {player_url}")
 
     # Get the table with stats
-    html = ...
-    soup = ...
-    table = ...
+    html = get_html(player_url)
+    soup = BeautifulSoup(html, "html.parser")
 
-    ...
-    stats = ...
+    # find NBA regular season section and the table in that section
+    nba_regular_season = soup.find(id="Regular_season")
+    table = nba_regular_season.find_next("table", {"class": "wikitable"})
 
-    rows = ...
+    # Find column names
+    table_head = table.find_all("th")
+    # Extracting abreviations
+    table_head = [head.text.strip() for head in table_head]
 
-    # Loop over rows and extract the stats
-    for row in rows:
-        cols = ...
-        ...
-        # Check correct team (some players change team within season)
-        ...
+    # Empty statistics dict
+    stats = {}
 
-        # load stats from columns
-        # keys should be 'points', 'assists', etc.
-        ...
+    # get all table rows
+    rows = table.find_all("tr")
+    # Loop over rows and extract the stats, skipping header row
+    for row in rows[1:]:
+        cols = row.find_all("td")
+
+        # Task specifies only season 2021-22
+        if "2021" in cols[table_head.index("Year")].text:
+            # Check correct team (some players change team within season)
+            if team in cols[table_head.index("Team")].text:
+                # load stats from columns and remove all non digit or comma signs
+                stats_list = [re.sub(r"[^\d\.]+", "", stat.text) for stat in cols[2:]]
+
+                # keys should be 'points', 'assists', etc.
+                stats["points"] = float(stats_list[table_head[2:].index("PPG")])
+                stats["assists"] = float(stats_list[table_head[2:].index("APG")])
+                stats["rebounds"] = float(stats_list[table_head[2:].index("RPG")])
 
     return stats
 
@@ -255,8 +268,12 @@ def get_player_stats(player_url: str, team: str) -> dict:
 # run the whole thing if called as a script, for quick testing
 if __name__ == "__main__":
     url = "https://en.wikipedia.org/wiki/2022_NBA_playoffs"
-    players = get_players(
-        "https://en.wikipedia.org/wiki/2021%E2%80%9322_Golden_State_Warriors_season"
+    # players = get_players(
+    #     "https://en.wikipedia.org/wiki/2021%E2%80%9322_Golden_State_Warriors_season"
+    # )
+    # print(players)
+    stats = get_player_stats(
+        "https://en.wikipedia.org/wiki/Stephen_Curry", "Golden State"
     )
-    print(players)
+    print(stats)
     # find_best_players(url)
