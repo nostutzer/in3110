@@ -177,7 +177,6 @@ def plot_best(best: Dict[str, List[Dict]], stat: str = "points") -> None:
 
     # save image to png
     fig.savefig(stats_dir + stat + ".png", bbox_inches="tight")
-    plt.show()
 
 
 def get_teams(url: str) -> list:
@@ -286,11 +285,14 @@ def get_players(team_url: str) -> list:
         # {'name':, 'url':}
         a_tags = cols[2].find("a")  # .get("href")
 
+        # Get name of player
+        player_name = re.sub(
+            r"\(.*\)", "", a_tags.get_text(strip=True)
+        )  # Remove all "stuff" in parenthesis after name
+
         # Dict of player info
         player_info = {
-            "name": re.sub(
-                r"\(.*\)", "", a_tags.get("title")
-            ),  # Remove all "stuff" in parenthesis after name
+            "name": player_name,
             "url": base_url + a_tags.get("href"),  # Append to base URL
         }
         players.append(player_info)
