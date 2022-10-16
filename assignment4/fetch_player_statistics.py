@@ -7,7 +7,9 @@ from urllib.parse import urljoin
 import numpy as np
 from bs4 import BeautifulSoup
 from matplotlib import pyplot as plt
+from cycler import cycler
 from requesting_urls import get_html
+import pandas as pd
 
 ## --- Task 8, 9 and 10 --- ##
 
@@ -43,13 +45,22 @@ def find_best_players(url: str) -> None:
     # get player statistics for each player,
     # using get_player_stats
     for team, players in all_players.items():
-        for player in players:
+        for i, player in enumerate(players):
             player_name = player["name"]
             player_url = player["url"]
             # print(all_players[team][player_name])
-            print(team, player_name, player_url)
+            # print(team, player_name, player_url)
             player_stats = get_player_stats(player_url, team)
-            print(player_stats)
+            # print(player_stats)
+            if len(player_stats) >= 3:
+                all_players[team][i]["points"] = player_stats["points"]
+                all_players[team][i]["assists"] = player_stats["assists"]
+                all_players[team][i]["rebounds"] = player_stats["rebounds"]
+            else:
+                all_players[team][i]["points"] = 0
+                all_players[team][i]["assists"] = 0
+                all_players[team][i]["rebounds"] = 0
+
     # at this point, we should have a dict of the form:
     # {
     #     "team name": [
@@ -66,13 +77,16 @@ def find_best_players(url: str) -> None:
 
     # Select top 3 for each team by points:
     best = {}
-    top_stat = ...
     for team, players in all_players.items():
+        # Construct Pandas dataframe for each team to better extract top 3
+        df = pd.DataFrame(players)
         # Sort and extract top 3 based on points
-        top_3 = ...
-        ...
+        top_3 = df.nlargest(3, "points")
 
-    stats_to_plot = ...
+        # "records" gives list of player dicts
+        best[team] = top_3.to_dict("records")
+
+    stats_to_plot = ["points", "assists", "rebounds"]
     for stat in stats_to_plot:
         plot_best(best, stat=stat)
 
@@ -102,8 +116,68 @@ def plot_best(best: Dict[str, List[Dict]], stat: str = "points") -> None:
         stat (str) : [points | assists | rebounds] which stat to plot.
             Should be a key in the player info dictionary.
     """
-    stats_dir = "NBA_player_statistics"
-    ...
+    stats_dir = "NBA_player_statistics/"
+    # Check if output directry exists, otherwise create it
+    if not os.path.exists(stats_dir):
+        os.mkdir(stats_dir)
+
+    # Setting colors to cycle through
+    my_cycler = cycler(color=["r", "g", "b"])
+    plt.rc("axes", prop_cycle=my_cycler)
+
+    # Making a figure and axis object
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    # Number of players in total
+    num_players = 24
+    offset = 0
+
+    xticks = []
+
+    # Maximum number of stat
+    max_stat = 0
+
+    # Iterate though each team
+    for i, (team, players) in enumerate(best.items()):
+        # Save xtick position of each team
+        xticks.append(i + 1 + offset)
+        for j, player in enumerate(players):
+            # Add bar for player
+            ax.bar(i + j + offset, player[stat], width=0.9)
+
+            # Add name of player
+            ax.text(
+                i + j + offset - 0.3,
+                player[stat] + 0.3,
+                player["name"],
+                rotation=90,
+                fontsize=9,
+            )
+            max_stat = np.max((max_stat, player[stat]))
+
+        # update offset of bars for each team
+        offset += 4
+
+    # Set axis labels
+    ax.set_ylabel(f"{stat}")
+    ax.set_xlabel("Team")
+
+    # change tick labels to team name
+    ax.set_xticks(xticks)
+    ax.set_xticklabels(best.keys(), rotation=45)
+
+    # setting y-limit so names don't get squished
+    ax.set_ylim(0, max_stat * 1.35)
+
+    # Add legend
+    ax.legend(["first", "second", "third"])
+
+    # set figure title
+    ax.set_title(f"Best players of each team in terms of: {stat}")
+
+    # save image to png
+    fig.savefig(stats_dir + stat + ".png", bbox_inches="tight")
+    plt.show()
 
 
 def get_teams(url: str) -> list:
@@ -214,7 +288,9 @@ def get_players(team_url: str) -> list:
 
         # Dict of player info
         player_info = {
-            "name": a_tags.get("title"),
+            "name": re.sub(
+                r"\(.*\)", "", a_tags.get("title")
+            ),  # Remove all "stuff" in parenthesis after name
             "url": base_url + a_tags.get("href"),  # Append to base URL
         }
         players.append(player_info)
@@ -266,6 +342,7 @@ def get_player_stats(player_url: str, team: str) -> dict:
                 stats_list = [re.sub(r"[^\d\.]+", "", stat.text) for stat in cols[2:]]
 
                 # keys should be 'points', 'assists', etc.
+                # Converting stats to float
                 stats["points"] = float(stats_list[table_head[2:].index("PPG")])
                 stats["assists"] = float(stats_list[table_head[2:].index("APG")])
                 stats["rebounds"] = float(stats_list[table_head[2:].index("RPG")])
@@ -277,4 +354,6 @@ def get_player_stats(player_url: str, team: str) -> dict:
 if __name__ == "__main__":
     url = "https://en.wikipedia.org/wiki/2022_NBA_playoffs"
     find_best_players(url)
-    # get_player_stats("https://en.wikipedia.org/wiki/Stephen_Curry", "Golden State")
+    # print(
+    #     get_player_stats("https://en.wikipedia.org/wiki/James_Wiseman", "Golden State")
+    # )
