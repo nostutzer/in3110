@@ -182,24 +182,39 @@ def get_players(team_url: str) -> list:
     """
     print(f"Finding players in {team_url}")
 
+    # Get base URL
+    base_url = team_url.split("/wiki/")[0]
+
     # Get the table
-    html = ...
-    soup = ...
-    table = ...
+    html = get_html(team_url)
+    soup = BeautifulSoup(html, "html.parser")
+    roster = soup.find(id="Roster")
+
+    # Find "table" inside table
+    table = roster.find_next("table").find("table")
 
     players = []
     # Loop over every row and get the names from roster
-    rows = ...
-    for row in rows:
+    rows = table.find_all("tr")
+
+    # Skipping first row as this is a table header
+    for row in rows[1:]:
         # Get the columns
-        cols = ...
+        cols = row.find_all("td")
+
         # find name links (a tags)
         # and add to players a dict with
         # {'name':, 'url':}
-        ...
+        a_tags = cols[2].find("a")  # .get("href")
+
+        # Dict of player info
+        player_info = {
+            "name": a_tags.get("title"),
+            "url": base_url + a_tags.get("href"),  # Append to base URL
+        }
+        players.append(player_info)
 
     # return list of players
-
     return players
 
 
@@ -240,4 +255,8 @@ def get_player_stats(player_url: str, team: str) -> dict:
 # run the whole thing if called as a script, for quick testing
 if __name__ == "__main__":
     url = "https://en.wikipedia.org/wiki/2022_NBA_playoffs"
-    find_best_players(url)
+    players = get_players(
+        "https://en.wikipedia.org/wiki/2021%E2%80%9322_Golden_State_Warriors_season"
+    )
+    print(players)
+    # find_best_players(url)
