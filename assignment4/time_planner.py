@@ -136,7 +136,13 @@ def render_schedule(data: pd.DataFrame) -> str:
         """
         return event_types.get(type_key[:2], type_key)
 
-    ...
+    # expanding abbreviation of Type columns
+    data["Type"] = data["Type"].apply(expand_event_type)
+
+    # convert dataframe to markdown string (index = False discards row indices)
+    markdown = data.to_markdown(index=False)
+
+    return markdown
 
 
 def strip_text(text: str) -> str:
@@ -249,38 +255,12 @@ def expand_row_col_span(data):
     return [[entry.text for entry in row] for row in new_data]
 
 
-# if __name__ == "__main__":
-#     # test the script on the past few years by running it:
-#     for year in range(20, 23):
-#         url = (
-#             f"https://en.wikipedia.org/wiki/20{year}–{year+1}_FIS_Alpine_Ski_World_Cup"
-#         )
-#         print(url)
-#         md = time_plan(url)
-#         print(md)
-
 if __name__ == "__main__":
-
-    sample_table = """
-    <table>
-    <tr>
-        <th>Date</th>
-        <th>Venue</th>
-        <th>Type</th>
-        <th>Info</th>
-    </tr>
-    <tr>
-        <td>October</td>
-        <td rowspan="2">UiO</td>
-        <td>Assignment 3</td>
-        <td>image filters</td>
-    </tr>
-    <tr>
-        <td>November</td>
-        <td colspan="2">Assignment 4</td>
-    </tr>
-    </table>
-    """
-
-    table = BeautifulSoup(sample_table, "html.parser")
-    events = extract_events(table)
+    # test the script on the past few years by running it:
+    for year in range(20, 23):
+        url = (
+            f"https://en.wikipedia.org/wiki/20{year}–{year+1}_FIS_Alpine_Ski_World_Cup"
+        )
+        print(url)
+        md = time_plan(url)
+        print(md)
