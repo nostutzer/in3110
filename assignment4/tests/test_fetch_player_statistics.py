@@ -64,7 +64,7 @@ def test_get_teams():
     [
         (
             "https://en.wikipedia.org/wiki/2021%E2%80%9322_Golden_State_Warriors_season",
-            16,
+            17,
             [
                 {
                     "name": "Curry, Stephen",
@@ -74,7 +74,7 @@ def test_get_teams():
         ),
         (
             "https://en.wikipedia.org/wiki/2021%E2%80%9322_Philadelphia_76ers_season",
-            16,
+            17,
             [
                 {
                     "name": "Thybulle, Matisse",
