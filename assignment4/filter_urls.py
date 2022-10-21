@@ -86,6 +86,7 @@ def find_articles(html: str, output=None) -> set:
     # Iterate though urls and add only the wikipedia articles to articles set
     for url in urls:
         search_result = re.search(pattern, url, re.VERBOSE)
+
         if search_result:
             article = search_result.group("article")
             articles.add(article)

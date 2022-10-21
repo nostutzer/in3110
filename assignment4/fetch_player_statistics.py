@@ -180,7 +180,7 @@ def plot_best(best: Dict[str, List[Dict]], stat: str = "points") -> None:
 
 
 def get_teams(url: str) -> list:
-    """Extracts all the teams that were in the semi finals in nba
+    """Extracts all the teams that were in the semi finals in NBA
 
     arguments:
         - url (str) : url of the nba finals wikipedia page

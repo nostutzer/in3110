@@ -23,8 +23,6 @@ month_names = [
 # for easier substitution later
 month_numbers = {name: f"{i + 1:02}" for i, name in enumerate(month_names)}
 
-print(month_numbers)
-
 
 def get_date_patterns() -> Tuple[str, str, str]:
     """Return strings containing regex pattern for year, month, day
