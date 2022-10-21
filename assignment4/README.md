@@ -151,7 +151,7 @@ The scripts provided in this directory are;
 
     > `paths_taken = find_path(start, finish)`
 
-    While running it will print some informative text on where it is currently and how many "steps" have been taken. In some cases the number of steps taken is as low as 2-3 and in other cases it needs < 200 steps, depending on the start and finish topics.
+    While running it will print some informative text on where it is currently and how many "steps" have been taken. In some cases the number of steps taken is as low as 2-3 and in other cases it needs > 200 steps, depending on the start and finish topics.
 
     *If you want to chose different start/finish paths then change the `start` and/or `finish` paths inside the mail-block of `wiki_race_challenge.py` as we have not yet implemented a command line interface for this script*
 
