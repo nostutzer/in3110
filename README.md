@@ -15,4 +15,7 @@ The following codes are contained in this repo:
 
 	- `test_array.py` --- Contains unit test for a number of operations evaluating the correctness of the `Array`class methods in `array_class.py`. Both 1D and 2D cases are tested for a variety of inputs types. To run the unit tests either run
 2. `assignment3/` -- Image manimulation tool `instapy`
-   - See ``assignment3/README.md` for thorough documentation
+   - See `assignment3/README.md` for thorough documentation
+
+3. `assignment4/` -- Web scraping and "Wikipedia Golf"
+   - See `assignment4/README.md` for thorough documentation.
