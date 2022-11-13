@@ -147,15 +147,36 @@ def fetch_prices(
 
 
 def plot_prices(df: pd.DataFrame) -> alt.Chart:
-    """Plot energy prices over time
+    """Plotting energy prices data over time as interactive line plot.
 
-    x-axis should be time_start
-    y-axis should be price in NOK
-    each location should get its own line
+    Args:
+        df (pd.DataFrame): Data frame with energy prices for given period of time and location
+                           in Norway.
 
-    Make sure to document arguments and return value...
+    Returns:
+        alt.Chart: Interactive Altair chart in which the energy prices in NOK per kWh is plotted
+                   as a function of time, separately for each location.
     """
-    ...
+
+    # Define chart of data
+    chart = (
+        alt.Chart(df)  # Provide altair with the data frame
+        .mark_line()  # Want line plot
+        .encode(
+            x="time_start:T",  # Time on the x-axis
+            y="NOK_per_kWh",  # Energy price in NOK per kWh on y-axis
+            color="location",  # One line plot per location
+            tooltip=[
+                "NOK_per_kWh",
+                "time_start",
+                "location_code",
+                "location",
+            ],  # Show tooltips when hovering over point in plot
+        )
+        .interactive()
+    )
+
+    return chart
 
 
 # Task 5.4
@@ -197,11 +218,11 @@ def plot_activity_prices(
 
 def main():
     """Allow running this module as a script for testing."""
-    df = fetch_prices()
-    # chart = plot_prices(df)
+    df = fetch_prices(locations=("NO1",))
+    chart = plot_prices(df)
     # showing the chart without requiring jupyter notebook or vs code for example
     # requires altair viewer: `pip install altair_viewer`
-    # chart.show()
+    chart.show()
 
 
 if __name__ == "__main__":
