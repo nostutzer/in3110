@@ -23,20 +23,64 @@ requests_cache.install_cache()
 
 
 def fetch_day_prices(date: datetime.date = None, location: str = "NO1") -> pd.DataFrame:
-    """Fetch one day of data for one location from hvakosterstrommen.no API
+    """Fetch one day of data for one location from hvakosterstrommen.no API. Note that
+    when passing daylight saving we omit the last hour of that day for simplicity sake.
 
-    Make sure to document arguments and return value...
-    ...
-    """
+    Args:
+        date (datetime.date, optional): Date from which to download electricity
+                                        price information. Defaults to None.
+        location (str, optional): Norwegian location code from which to
+                                  gather electricity price. Defaults to "NO1".
+
+    Returns:
+        pd.DataFrame: Data frame containing the electricity price (first column)
+                      in NOK per kWh at any hour during the selected day (second column)"""
     if date is None:
-        date = ...
-    url = ...
-    ...
+        # If no date is provided choose the date today
+        date = datetime.date.today()
+
+    # First allowed date 2nd October 2022, raise error if date is before min_date
+    min_date = datetime.date(2022, 10, 2)
+    assert min_date <= date
+
+    # Extracting year, month and day from datetime object as string
+    year = date.strftime("%Y")
+    # Using formatting %m and %d to ensure zero padded month and day respectively
+    month = date.strftime("%m")
+    day = date.strftime("%d")
+
+    # API's URL
+    url = f"https://www.hvakosterstrommen.no/api/v1/prices/{year}/{month}-{day}_{location}.json"
+    # Request json from API
+    r = requests.get(url)
+
+    # Re-formatting requested json into pandas data frame.
+    df = pd.DataFrame(r.json())
+
+    # We want only columns with "NOK_per_kWh" and "time_start"
+    df = df[["NOK_per_kWh", "time_start"]]
+
+    # Convert date time in last tow columns to wanted datetime format
+    df["time_start"] = pd.to_datetime(df["time_start"], utc=True).dt.tz_convert(
+        "Europe/Oslo"
+    )
+
+    # If number of rows, i.e. number of hours in date is more than 24 we are in
+    # daylight saving and will omit the last hour of that day for simplicity sake
+    # (there might be better ways we could implement in the future).
+    if df.shape[0] > 24:
+        df = df.iloc[:-1, :]
+
+    return df
 
 
 # LOCATION_CODES maps codes ("NO1") to names ("Oslo")
 LOCATION_CODES = {
-    ...
+    "NO1": "Oslo / Øst-Norge",
+    "NO2": "Kristiansand / Sør-Norge",
+    "NO3": "Trondheim / Midt-Norge",
+    "NO4": "Tromsø / Nord-Norge",
+    "NO5": "Bergen / Vest-Norge",
 }
 
 # task 1:
@@ -112,11 +156,14 @@ def plot_activity_prices(
 
 def main():
     """Allow running this module as a script for testing."""
-    df = fetch_prices()
-    chart = plot_prices(df)
+    df = fetch_day_prices(datetime.date(2022, 10, 30), "NO1")
+    df = fetch_day_prices(datetime.date(2022, 10, 29), "NO1")
+
+    # df = fetch_prices()
+    # chart = plot_prices(df)
     # showing the chart without requiring jupyter notebook or vs code for example
     # requires altair viewer: `pip install altair_viewer`
-    chart.show()
+    # chart.show()
 
 
 if __name__ == "__main__":
