@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 import altair as alt
 import json
@@ -16,6 +16,7 @@ from strompris import (
     plot_activity_prices,
     plot_daily_prices,
     plot_prices,
+    compute_tooltips,
 )
 
 app = FastAPI()
@@ -69,12 +70,12 @@ def render_strompris(
 # (task 5.6: return chart stacked with plot_daily_prices)
 
 
-@app.get("/plot_prices.json", response_class=HTMLResponse)
+@app.get("/plot_prices.json")
 def plot_prices_json(
     locations: List[str] = Query(default=location_code_keys),
     end: Optional[str] = Query(default=None),
-    days: int = Query(default=8),
-) -> str:
+    days: int = Query(default=7),
+) -> Dict:
     """Function which handles the "GET /plot_prices.json" request and
        returns an Altair chart with enegry prices from 
        https://www.hvakosterstrommen.no/ API.
@@ -100,16 +101,17 @@ def plot_prices_json(
     else:
         end_date = datetime.date.fromisoformat(end)
 
-    # Get dataset of prices
-    df = fetch_prices(end_date=end_date, days=days, locations=tuple(locations))
+    # Get dataset of prices. Adding 14 days to days to ensure we get tooltip for weekly difference
+    df = fetch_prices(end_date=end_date, days=days + 14, locations=tuple(locations))
+    
+    #Compute tooltips to add to plot and add them as columns to data frame
+    df = compute_tooltips(df, days)
 
     # Get altair chart
     chart = plot_prices(df)
 
-    # Convert altair plot to json
-    chart_json = json.dumps(chart.to_dict())
-
-    return chart_json
+    # Convert altair plot to json dict
+    return chart.to_dict()
 
 
 # Task 5.6:

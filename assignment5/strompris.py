@@ -139,7 +139,7 @@ def fetch_prices(
 
             # Concatenate fetched data to full dataframe
             df_full = pd.concat((df_full, df_day), axis=0)
-
+    
     return df_full
 
 
@@ -164,22 +164,43 @@ def plot_prices(df: pd.DataFrame) -> alt.Chart:
         .mark_line()  # Want line plot
         .encode(
             x="time_start:T",  # Time on the x-axis
-            y="NOK_per_kWh",  # Energy price in NOK per kWh on y-axis
+            y="NOK_per_kWh:Q",  # Energy price in NOK per kWh on y-axis
             color="location",  # One line plot per location
             tooltip=[
                 "NOK_per_kWh",
                 "time_start",
                 "location_code",
                 "location",
+                # "hourly_diff",
+                # "daily_diff",
+                # "weekly_diff",
             ],  # Show tooltips when hovering over point in plot
         )
         .interactive()
-    )
-
+    )   
     return chart
 
 
 # Task 5.4
+
+def compute_tooltips(df: pd.DataFrame, days: int) -> pd.DataFrame:
+
+    # Add column to input DataFrame with difference in energy price to previous hour.
+    
+    # The groupby makes sure only differences are taken between prices in same location.
+    df["hourly_diff"] = df[["location_code", "NOK_per_kWh"]].groupby(["location_code"]).diff(1)
+    
+    # Add column to input DataFrame with difference in energy price to previous day (same hour)
+    df["daily_diff"] = df[["location_code", "NOK_per_kWh"]].groupby(["location_code"]).diff(24)
+    
+    # Add column to input DataFrame with difference in energy price to previous week (same day and hour)
+    df["weekly_diff"] = df[["location_code", "NOK_per_kWh"]].groupby(["location_code"]).diff(24 * 7)
+    
+    # We only return "days" of the previous data
+    time_mask = df.time_start > pd.to_datetime(df.time_start.iloc[-1].date() - datetime.timedelta(days=days - 1), utc = True)
+
+    return df[time_mask]
+
 
 
 def plot_daily_prices(df: pd.DataFrame) -> alt.Chart:
@@ -192,7 +213,8 @@ def plot_daily_prices(df: pd.DataFrame) -> alt.Chart:
 
     Make sure to document arguments and return value...
     """
-    ...
+
+
 
 
 # Task 5.6
@@ -218,11 +240,19 @@ def plot_activity_prices(
 
 def main():
     """Allow running this module as a script for testing."""
-    df = fetch_prices(locations=("NO1",))
+    df = fetch_prices(days=2 + 20, locations=("NO1", "NO5",))
+    # print(df.location_code.unique())
+
+    df = compute_tooltips(df, 2)
+    # print(df.location_code.unique())
+    # print(df[df["location_code"] == "NO1"])
+    # print(df[df["location_code"] == "NO2"])
+    # print((df[df["location_code"] == "NO1"]["NOK_per_kWh"] - df[df["location_code"] == "NO2"]["NOK_per_kWh"]).abs().max())
     chart = plot_prices(df)
-    # showing the chart without requiring jupyter notebook or vs code for example
-    # requires altair viewer: `pip install altair_viewer`
-    chart.show()
+    # #chart = plot_daily_prices(df)
+    # # showing the chart without requiring jupyter notebook or vs code for example
+    # # requires altair viewer: `pip install altair_viewer`
+    # chart.show()
 
 
 if __name__ == "__main__":
