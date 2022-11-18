@@ -44,9 +44,9 @@ def render_strompris(
     # If no date is provided the current date is used.
     # Else the provided date is used.
     if today is None:
-        today = datetime.date.today()
+        today_date = datetime.date.today()
     else:
-        today = datetime.date.fromisoformat(today)
+        today_date = datetime.date.fromisoformat(today)
 
     # Returning response to render HTML template
     return templates.TemplateResponse(
@@ -54,7 +54,7 @@ def render_strompris(
         {
             "request": request,
             "location_codes": LOCATION_CODES,
-            "today": today,
+            "today": today_date,
         },
     )
 
@@ -96,12 +96,12 @@ def plot_prices_json(
     # If no date is provided the current date is used.
     # Else the provided date is used.
     if end is None:
-        end = datetime.date.today()
+        end_date = datetime.date.today()
     else:
-        end = datetime.date.fromisoformat(end)
+        end_date = datetime.date.fromisoformat(end)
 
     # Get dataset of prices
-    df = fetch_prices(end_date=end, days=days, locations=tuple(locations))
+    df = fetch_prices(end_date=end_date, days=days, locations=tuple(locations))
 
     # Get altair chart
     chart = plot_prices(df)
