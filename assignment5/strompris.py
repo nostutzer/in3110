@@ -171,9 +171,9 @@ def plot_prices(df: pd.DataFrame) -> alt.Chart:
                 "time_start",
                 "location_code",
                 "location",
-                # "hourly_diff",
-                # "daily_diff",
-                # "weekly_diff",
+                "hourly_diff",
+                "daily_diff",
+                "weekly_diff",
             ],  # Show tooltips when hovering over point in plot
         )
         .interactive()
