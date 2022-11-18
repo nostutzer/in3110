@@ -184,37 +184,77 @@ def plot_prices(df: pd.DataFrame) -> alt.Chart:
 # Task 5.4
 
 def compute_tooltips(df: pd.DataFrame, days: int) -> pd.DataFrame:
+    """Helper function which for each hour in the input data frame
+       computes the difference in energy price to; 
+        - the previous hour 
+        - the same hour of the previous day
+        - the same hour and day of the previous week
+       and adds these as separate columns to the data frame. 
+       These columns can can then be used as tooltips in altair chart. 
 
+    Args:
+        df (pd.DataFrame): Data frame with hourly energy price 
+                           for different regions of Norway.
+        days (int): how many days back in time we want to retrieve 
+                    energy prices.
+
+    Returns:
+        pd.DataFrame: Output data frame will be the same as input data frame, 
+                      but with hourly, daily and weekly energy price differences
+                      added as columns. The output data frame will also be shortened to
+                      only contain the wanted number of days as rows.
+    """
     # Add column to input DataFrame with difference in energy price to previous hour.
     
     # The groupby makes sure only differences are taken between prices in same location.
-    df["hourly_diff"] = df[["location_code", "NOK_per_kWh"]].groupby(["location_code"]).diff(1)
+    df["hourly_diff"] = df[
+        ["location_code", 
+        "NOK_per_kWh"]
+        ].groupby(["location_code"]).diff(1)
     
     # Add column to input DataFrame with difference in energy price to previous day (same hour)
-    df["daily_diff"] = df[["location_code", "NOK_per_kWh"]].groupby(["location_code"]).diff(24)
+    df["daily_diff"] = df[
+        ["location_code", 
+        "NOK_per_kWh"]
+        ].groupby(["location_code"]).diff(24)
     
     # Add column to input DataFrame with difference in energy price to previous week (same day and hour)
-    df["weekly_diff"] = df[["location_code", "NOK_per_kWh"]].groupby(["location_code"]).diff(24 * 7)
+    df["weekly_diff"] = df[
+        ["location_code", 
+        "NOK_per_kWh"]
+        ].groupby(["location_code"]).diff(24 * 7)
     
     # We only return "days" of the previous data
-    time_mask = df.time_start > pd.to_datetime(df.time_start.iloc[-1].date() - datetime.timedelta(days=days - 1), utc = True)
+    time_mask = (df.time_start > 
+                pd.to_datetime(df.time_start.iloc[-1].date()
+                               - datetime.timedelta(days=days - 1), 
+                               utc = True))
 
     return df[time_mask]
 
 
 
 def plot_daily_prices(df: pd.DataFrame) -> alt.Chart:
-    """Plot the daily average price
+    """Function which from provided pandas data frame generates
+       an altair line/point chart showing the daily average 
+       energy price per region of Norway. Chart x-axis will
+       be day of the week, y-axis will be daily mean NOK per kWh
+       and tooltips showing up when hovering the curser above 
+       plot points will include;
+        - daily mean NOK per kWh 
+        - exact date of average measurement
+        - location name
+        - location code
 
-    x-axis should be time_start (day resolution)
-    y-axis should be price in NOK
+    Args:
+        df (pd.DataFrame): Data frame of energy prices in different regions of Norway
 
-    You may use any mark.
-
-    Make sure to document arguments and return value...
+    Returns:
+        alt.Chart: Altair chart with daily average energy prices in
+                   different regions of Norway to be shown on web app. 
     """
 
-     # Define chart of data
+    # Define chart of data
     chart = (
         alt.Chart(df)  # Provide altair with the data frame
         .mark_line(point=True)  # Want line plot with dots
@@ -227,9 +267,9 @@ def plot_daily_prices(df: pd.DataFrame) -> alt.Chart:
             tooltip=[
                 "mean(NOK_per_kWh):Q",
                 "yearmonthdate(time_start)",    # Show exact date when hovering over point in plot
-                "location_code",
-                "location",
-                ],  # Show tooltips when hovering over point in plot
+                "location_code",                
+                "location",                      
+                ],                              # Show tooltips when hovering over point in plot
         ).interactive()
     )   
     return chart
