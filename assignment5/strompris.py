@@ -171,9 +171,9 @@ def plot_prices(df: pd.DataFrame) -> alt.Chart:
                 "time_start",
                 "location_code",
                 "location",
-                "hourly_diff",
-                "daily_diff",
-                "weekly_diff",
+                "hourly_diff:Q",
+                "daily_diff:Q",
+                "weekly_diff:Q",
             ],  # Show tooltips when hovering over point in plot
         )
         .interactive()
@@ -214,6 +214,25 @@ def plot_daily_prices(df: pd.DataFrame) -> alt.Chart:
     Make sure to document arguments and return value...
     """
 
+     # Define chart of data
+    chart = (
+        alt.Chart(df)  # Provide altair with the data frame
+        .mark_line(point=True)  # Want line plot with dots
+        .encode(
+            x="day(time_start)",  # Day of the week on the x-axis
+            y=alt.Y(field = "NOK_per_kWh", 
+                    aggregate= "mean", 
+                    axis = alt.Axis(title="Daily mean NOK_per_kWh")),  # Daily averaged energy price in NOK per kWh on y-axis
+            color="location",  # One line plot per location
+            tooltip=[
+                "mean(NOK_per_kWh):Q",
+                "yearmonthdate(time_start)",    # Show exact date when hovering over point in plot
+                "location_code",
+                "location",
+                ],  # Show tooltips when hovering over point in plot
+        ).interactive()
+    )   
+    return chart
 
 
 

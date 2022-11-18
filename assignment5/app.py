@@ -110,6 +110,12 @@ def plot_prices_json(
     # Get altair chart
     chart = plot_prices(df)
 
+    # Get altair chart with daily mean
+    chart_mean = plot_daily_prices(df)
+
+    # Make a side-by-side compound plot of the two charts
+    chart = chart | chart_mean
+
     # Convert altair plot to json dict
     return chart.to_dict()
 
