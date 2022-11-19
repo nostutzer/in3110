@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
-Fetch data from https://www.hvakosterstrommen.no/strompris-api
-and visualize it.
-
-Assignment 5
+This module fetches data 
+from https://www.hvakosterstrommen.no/strompris-api
+and visualize it as an Altair chart.
 """
 
 import datetime
@@ -18,10 +17,6 @@ from typing import Tuple
 # to avoid unnecessary repeat requests for the same data
 # this will create the file http_cache.sqlite
 requests_cache.install_cache()
-
-
-# task 5.1:
-
 
 def fetch_day_prices(date: datetime.date = None, location: str = "NO1") -> pd.DataFrame:
     """Fetch one day of data for one location from hvakosterstrommen.no API. Note that
@@ -85,9 +80,6 @@ LOCATION_CODES = {
     "NO5": "Bergen",
 }
 
-# task 1:
-
-
 def fetch_prices(
     end_date: datetime.date = None,
     days: int = 7,
@@ -142,12 +134,8 @@ def fetch_prices(
     
     return df_full
 
-
-# task 5.1:
-
-
 def plot_prices(df: pd.DataFrame) -> alt.Chart:
-    """Plotting energy prices data over time as interactive line plot.
+    """Plotting energy prices data over time as interactive Altair line plot.
 
     Args:
         df (pd.DataFrame): Data frame with energy prices for given period of time and location
@@ -180,17 +168,14 @@ def plot_prices(df: pd.DataFrame) -> alt.Chart:
     )   
     return chart
 
-
-# Task 5.4
-
 def compute_tooltips(df: pd.DataFrame, days: int) -> pd.DataFrame:
     """Helper function which for each hour in the input data frame
-       computes the difference in energy price to; 
-        - the previous hour 
-        - the same hour of the previous day
-        - the same hour and day of the previous week
-       and adds these as separate columns to the data frame. 
-       These columns can can then be used as tooltips in altair chart. 
+    computes the difference in energy price to; 
+    - the previous hour 
+    - the same hour of the previous day
+    - the same hour and day of the previous week
+    and adds these as separate columns to the data frame. 
+    These columns can can then be used as tooltips in altair chart. 
 
     Args:
         df (pd.DataFrame): Data frame with hourly energy price 
@@ -232,19 +217,17 @@ def compute_tooltips(df: pd.DataFrame, days: int) -> pd.DataFrame:
 
     return df[time_mask]
 
-
-
 def plot_daily_prices(df: pd.DataFrame) -> alt.Chart:
     """Function which from provided pandas data frame generates
-       an altair line/point chart showing the daily average 
-       energy price per region of Norway. Chart x-axis will
-       be day of the week, y-axis will be daily mean NOK per kWh
-       and tooltips showing up when hovering the curser above 
-       plot points will include;
-        - daily mean NOK per kWh 
-        - exact date of average measurement
-        - location name
-        - location code
+    an altair line/point chart showing the daily average 
+    energy price per region of Norway. Chart x-axis will
+    be day of the week, y-axis will be daily mean NOK per kWh
+    and tooltips showing up when hovering the curser above 
+    plot points will include;
+    - daily mean NOK per kWh 
+    - exact date of average measurement
+    - location name
+    - location code
 
     Args:
         df (pd.DataFrame): Data frame of energy prices in different regions of Norway
@@ -275,43 +258,27 @@ def plot_daily_prices(df: pd.DataFrame) -> alt.Chart:
     return chart
 
 
-
-# Task 5.6
-
-ACTIVITIES = {
-    # activity name: energy cost in kW
-    ...
-}
-
-
-def plot_activity_prices(
-    df: pd.DataFrame, activity: str = "shower", minutes: float = 10
-) -> alt.Chart:
-    """
-    Plot price for one activity by name,
-    given a data frame of prices, and its duration in minutes.
-
-    Make sure to document arguments and return value...
-    """
-
-    ...
-
-
 def main():
     """Allow running this module as a script for testing."""
-    df = fetch_prices(days=2 + 20, locations=("NO1", "NO5",))
-    # print(df.location_code.unique())
+    # Get dataset of prices. Adding 14 days to days to ensure 
+    # we get tooltip for weekly difference
+    df = fetch_prices(days=7 + 14)
+    
+    #Compute tooltips to add to plot and add them as columns to data frame
+    df = compute_tooltips(df, 7)
 
-    df = compute_tooltips(df, 2)
-    # print(df.location_code.unique())
-    # print(df[df["location_code"] == "NO1"])
-    # print(df[df["location_code"] == "NO2"])
-    # print((df[df["location_code"] == "NO1"]["NOK_per_kWh"] - df[df["location_code"] == "NO2"]["NOK_per_kWh"]).abs().max())
+    # Get altair chart
     chart = plot_prices(df)
-    # #chart = plot_daily_prices(df)
-    # # showing the chart without requiring jupyter notebook or vs code for example
-    # # requires altair viewer: `pip install altair_viewer`
-    # chart.show()
+
+    # Get altair chart with daily mean
+    chart_mean = plot_daily_prices(df)
+
+    # Make a side-by-side compound plot of the two charts
+    chart = chart | chart_mean
+
+    # showing the chart without requiring jupyter notebook or vs code for example
+    # requires altair viewer: `pip install altair_viewer`
+    chart.show()
 
 
 if __name__ == "__main__":

@@ -1,26 +1,62 @@
+"""FastAPI web app that generates an interactive Altair plot of 
+energy prices of five different regions within Norway
+downloaded from the https://www.hvakosterstrommen.no/strompris-api . 
+The plot is rendered as a nice informative web app using FastAPI."""
+
+import os
 import datetime
 from typing import List, Optional, Dict
 
-import altair as alt
-import json
 from fastapi import FastAPI, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+
+from starlette.routing import Mount, BaseRoute
 from starlette.staticfiles import StaticFiles
-import starlette
+
 from strompris import (
-    ACTIVITIES,
     LOCATION_CODES,
-    fetch_day_prices,
     fetch_prices,
-    plot_activity_prices,
     plot_daily_prices,
     plot_prices,
     compute_tooltips,
 )
 
-app = FastAPI()
+def route_to_docs() -> List[BaseRoute]:
+    """Helper function which will mount the Sphinx
+    documentation directory as a StaticFile. The function
+    then returns a BaseRoute used to handle the "GET /help"
+    request when clicking on web app "help" button in 
+    navigation bar
+
+    Returns:
+        List[BaseRoute]: BaseRoute static routes used to initialize app and links
+                         to the sphinx documentation.
+    """
+
+    # Path to docs when simply running app.py as script
+    path2docs = "docs/_build/html"
+
+    # If imported as module from docs folder
+    # we construct absolute path for documentation
+    # directory. Else an error is triggered when the 
+    # documentation directory is not found.
+    if __name__ != "__main__" and "docs" in os.getcwd():
+        path2docs = os.getcwd() + "/_build/html"
+
+    docs = Mount(
+        path = "/help",     # Want to get to sphinx docs when "/help" is appended to API url
+        app = StaticFiles(directory=path2docs, html=True), # Generating static files in docs folder
+        name = "help"
+    )
+    return [docs]
+
+
+# Define app and template objects
+app = FastAPI(routes=route_to_docs())
 templates = Jinja2Templates(directory="templates")
+
+# Get location code keys
 location_code_keys = tuple(LOCATION_CODES.keys())
 
 @app.get("/", response_class=HTMLResponse)
@@ -29,7 +65,7 @@ def render_strompris(
     today: Optional[str] = Query(default=None),
 ):
     """Function handles the "GET /" request from strømpris web app to
-       render the HTML template using Jinja.
+    render the HTML template using Jinja.
 
     Args:
         request (Request): Request object from FastAPI.
@@ -59,17 +95,6 @@ def render_strompris(
         },
     )
 
-
-# GET /plot_prices.json should take inputs:
-# - locations (list from Query)
-# - end (date)
-# - days (int, default=7)
-# all inputs should be optional
-# return should be a vega-lite JSON chart (alt.Chart.to_dict())
-# produced by `plot_prices`
-# (task 5.6: return chart stacked with plot_daily_prices)
-
-
 @app.get("/plot_prices.json")
 def plot_prices_json(
     locations: List[str] = Query(default=location_code_keys),
@@ -77,8 +102,8 @@ def plot_prices_json(
     days: int = Query(default=7),
 ) -> Dict:
     """Function which handles the "GET /plot_prices.json" request and
-       returns an Altair chart with enegry prices from 
-       https://www.hvakosterstrommen.no/ API.
+    returns an Altair chart with enegry prices from 
+    https://www.hvakosterstrommen.no/ API.
 
 
     Args:
@@ -88,7 +113,7 @@ def plot_prices_json(
         end (Optional[str], optional): End date up to which to retrieve energy prices. 
                                        Defaults to Query(default=None).
         days (int, optional): How many days back in time from end for which to retrieve energy prices. 
-                              Defaults to Query(default=8).
+                              Defaults to Query(default=7).
 
     Returns:
         str: json string formatting of Altair chart containing energy prices.
@@ -118,29 +143,6 @@ def plot_prices_json(
 
     # Convert altair plot to json dict
     return chart.to_dict()
-
-
-# Task 5.6:
-# `GET /activity` should render the `activity.html` template
-# activity.html template must be adapted from `strompris.html`
-# with inputs:
-# - request
-# - location_codes: location code dict
-# - activities: activity energy dict
-# - today: current date
-
-
-# Task 5.6:
-# `GET /plot_activity.json` should return vega-lite chart JSON (alt.Chart.to_dict())
-# from `plot_activity_prices`
-# with inputs:
-# - location (single, default=NO1)
-# - activity (str, default=shower)
-# - minutes (int, default=10)
-
-
-# mount your docs directory as static files at `/help`
-
 
 if __name__ == "__main__":
     import uvicorn
