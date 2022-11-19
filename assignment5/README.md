@@ -6,7 +6,7 @@ from the [Hva koster strømmen](https://www.hvakosterstrommen.no/strompris-api) 
 ## Requeirements and Installation
 In order to run the codes in this directory we recommend that a new `conda` environment is created first. Specifically, there are several dependencies that one needs to install to run the codes in this directory. All these dependencies are found in the [`requirements.txt`](requirements.txt) file. We can, using this file, directly create a `conda` environment with all the needed dependencies (and also some more that were used to run code in the previous assignments) by simply running 
 
-> `$ conda create --name <env> --file requirements.txt`
+> `$ conda create --name <name of my environment> --file requirements.txt`
 
 in a terminal. Make sure that you are in the `assignment5` directory before you create the environment; so that the `requirements.txt` file is found.
 To activate your environment type 
