@@ -19,3 +19,6 @@ The following codes are contained in this repo:
 
 3. `assignment4/` -- Web scraping and "Wikipedia Golf"
    - See `assignment4/README.md` for thorough documentation.
+
+4. `assignment5/` -- Strømpris Web App
+   - See `assignment5/README.md` for thorough documentation.
