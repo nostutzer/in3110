@@ -12,8 +12,16 @@ Using the Strømpris web app you can download the electricity
 prices of five regions within Norway to make nice and informative
 plots of the energy prices in NOK per kWh as a function of time.
 
+To run web app simply type 
+
+:code:`python -m app app.py`
+
+in your terminal. Then simply copy and paste the URL that 
+:code:`uvicorn` will provide in the terminal into your favorite
+internet browser to get to the web app.
+
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 2
    :caption: Contents:
 
    app.rst
